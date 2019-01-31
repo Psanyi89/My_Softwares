@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -51,22 +52,34 @@ namespace Weather_App
         }
         #endregion
         #region Daily or 5 days forcast call
-        public dynamic getForeCast(string type, string country, string city, string lang)
+        /// <summary>
+        /// Retreiving weather reports
+        /// </summary>
+        /// <param name="parameters[]"> 
+        /// parameters[0] = measurement units
+        /// parameters[1] = type of forecast
+        /// parameters[2] = country code
+        /// parameters[3] = city name
+        /// parameters[4] = language
+        /// </param>
+        /// <returns></returns>
+        public dynamic GetForeCast(string[] parameters)
         {
 
             using (WebClient web = new WebClient())
             {
-
-                string url = string.Format($"https://api.openweathermap.org/data/2.5/{type}?q={city},{country}&appid={AppId}&units=metric&lang={lang}");
+                parameters[2] = string.IsNullOrEmpty(parameters[2]) || parameters[2] == "XK" ? "" : $",{parameters[2]}";
+                string url = string.Format($"https://api.openweathermap.org/data/2.5/{parameters[1]}?q={parameters[3]}{parameters[2]}&appid={AppId}&units={parameters[0]}&lang={parameters[4]}&cnt={parameters[5]}");
                 string json = web.DownloadString(url);
                 json = Encoding.UTF8.GetString(Encoding.Default.GetBytes(json));
-                if (type == "forecast")
+                if (parameters[1] == "forecast")
                 {
                     return JsonConvert.DeserializeObject<WeatherForecast>(json);
                 }
                 else
                 {
                     return JsonConvert.DeserializeObject<WeatherData>(json);
+
                 }
 
             }
@@ -83,6 +96,144 @@ namespace Weather_App
                 return JsonConvert.DeserializeObject<List<City>>(json).OrderBy(x => x.country).ToList();
             }
 
+        }
+        #endregion
+        #region create GroupBox
+        public GroupBox AddGroupBox(int i, dynamic forecast, string temperature, string speed)
+        {
+            string date, temp, icon, time;
+
+
+            if (forecast is WeatherForecast)
+            {
+                date = forecast.list[i].dt_txt.ToString("MMMM dd dddd");
+
+                temp = forecast.list[i].main.temp.ToString();
+                icon = forecast.list[i].weather[0].icon;
+                time = forecast.list[i].dt_txt.ToString("HH:mm");
+            }
+            else
+            {
+                date = UnixTimeStampConverter(forecast.dt).ToString("MMMM dd dddd");
+
+                temp = forecast.main.temp.ToString();
+                icon = forecast.weather[0].icon;
+                time = UnixTimeStampConverter(forecast.dt).ToString("HH:mm");
+            }
+            GroupBox group = new GroupBox
+            {
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+            };
+            FlowLayoutPanel main = new FlowLayoutPanel
+            {
+                Parent = group,
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+
+            };
+            FlowLayoutPanel buffer = new FlowLayoutPanel
+            {
+                Parent = main,
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+
+            };
+            FlowLayoutPanel Child1 = new FlowLayoutPanel
+            {
+                Name = $"Child1{i}",
+                Parent = buffer,
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+
+            };
+            FlowLayoutPanel Child2 = new FlowLayoutPanel
+            {
+                Name = $"Child2{i}",
+                Parent = buffer,
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+
+            };
+            Label Day = new Label
+            {
+                Text = $"{date}",
+                Parent = main,
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                Font = new Font("Microsoft Sans Serif", 12, FontStyle.Bold),
+                ForeColor = Color.LightBlue
+            };
+
+
+            PictureBox picture = new PictureBox
+            {
+                Parent = Child1,
+                ImageLocation = $"Resources\\{icon}.png",
+                SizeMode = PictureBoxSizeMode.CenterImage,
+                Margin = new Padding(0, 5, 0, 0),
+            };
+
+            Label Temp = new Label
+            {
+                Text = $"{temp}{temperature}",
+                Parent = Child2,
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                Font = new Font("Microsoft Sans Serif", 12, FontStyle.Bold),
+                ForeColor = Color.Black
+            };
+            Label Time = new Label
+            {
+                Text = time,
+                Parent = Child2,
+                Dock = DockStyle.Bottom,
+                AutoSize = true,
+                Font = new Font("Microsoft Sans Serif", 12, FontStyle.Bold),
+                ForeColor = Color.Black
+            };
+            return group;
+        }
+        #endregion
+        #region Reset controls
+
+        public void ClearAll(Control control)
+        {
+            foreach (Control c in control.Controls)
+            {
+
+                TextBox texbox = c as TextBox;
+                ComboBox comboBox = c as ComboBox;
+                DateTimePicker dateTimePicker = c as DateTimePicker;
+                RichTextBox richTextBox = c as RichTextBox;
+                if (texbox != null)
+                {
+                    texbox.Clear();
+                }
+
+                if (comboBox != null && !string.IsNullOrEmpty(comboBox.Text))
+                {
+                    comboBox.SelectedIndex = 0;
+                }
+
+                if (dateTimePicker != null)
+                {
+                    dateTimePicker.Format = DateTimePickerFormat.Short;
+                    dateTimePicker.CustomFormat = " ";
+                }
+                if (richTextBox != null)
+                {
+                    richTextBox.Clear();
+                }
+                if (c.HasChildren)
+                {
+                    ClearAll(c);
+                }
+            }
         }
         #endregion
     }
