@@ -3,7 +3,6 @@ using PersonEntities;
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 
 
 namespace PersonManangerWPF
@@ -20,7 +19,7 @@ namespace PersonManangerWPF
             pm = new DLLFacade().GetPersonManagerMemory();
             LstPerson.ItemsSource = pm.GetPersons();
             Options.ItemsSource = new DataAccess().AccesPoint;
-           
+
         }
         private void LstPerson_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -42,6 +41,7 @@ namespace PersonManangerWPF
                 person.DateOfBirth = Convert.ToDateTime(TxtDateOfBirth.Text);
                 person.Email = TxtEmail.Text;
                 pm.UpdatePerson(person);
+                ClearPanel();
             }
             LstPerson.ItemsSource = pm.GetPersons();
         }
@@ -54,29 +54,16 @@ namespace PersonManangerWPF
                 return;
             }
             pm.DeletePerson(person);
-
-            foreach (object item in LogicalTreeHelper.GetChildren(Display))
-            {
-                if (item is WrapPanel)
-                {
-                    foreach (object itemsitem in LogicalTreeHelper.GetChildren((WrapPanel)item))
-                    {
-                        if (itemsitem is TextBox)
-                        {
-                            ((TextBox)itemsitem).Text = string.Empty;
-                        }
-                    }
-                }
-            }
+            ClearPanel();
             LstPerson.ItemsSource = pm.GetPersons();
         }
 
-       
+
 
         private void AddPerson_Click(object sender, RoutedEventArgs e)
         {
             //NavigationService.Navigate(new AddPerson());
-            if (!string.IsNullOrWhiteSpace(TxtName.Text) && !string.IsNullOrWhiteSpace(TxtEmail.Text)&& !string.IsNullOrWhiteSpace(TxtDateOfBirth.Text))
+            if (!string.IsNullOrWhiteSpace(TxtName.Text) && !string.IsNullOrWhiteSpace(TxtEmail.Text) && !string.IsNullOrWhiteSpace(TxtDateOfBirth.Text))
             {
                 Person Person = new Person
                 {
@@ -86,7 +73,7 @@ namespace PersonManangerWPF
                 };
                 pm.AddPerson(Person);
                 LstPerson.ItemsSource = pm.GetPersons();
-
+                ClearPanel();
             }
             return;
         }
@@ -98,20 +85,58 @@ namespace PersonManangerWPF
         //        LstPerson.ItemsSource = pm.GetPersons();
         //    }
         //}
-        
+
 
         private void Options_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Options.SelectedIndex==0)
+            if (Options.SelectedIndex == 0)
             {
                 pm = new DLLFacade().GetPersonManagerMemory();
-                
+
             }
-            else if(Options.SelectedIndex==1)
+            else if (Options.SelectedIndex == 1)
             {
                 pm = new DLLFacade().GetPersonManagerTxt();
             }
+            else if (Options.SelectedIndex == 2)
+            {
+                pm = new DLLFacade().GetPersonManagerCSV();
+            }
+            else if (Options.SelectedIndex == 3)
+            {
+                pm = new DLLFacade().GetPersonManagerXml();
+            }
+            else if (Options.SelectedIndex == 4)
+            {
+                pm = new DLLFacade().GetPersonManagerToml();
+            }
             LstPerson.ItemsSource = pm.GetPersons();
+        }
+        private void ClearPanel()
+        {
+            foreach (object item in LogicalTreeHelper.GetChildren(Display))
+            {
+                if (item is WrapPanel)
+                {
+                    foreach (object itemsitem in LogicalTreeHelper.GetChildren((WrapPanel)item))
+                    {
+                        if (itemsitem is TextBox)
+                        {
+                            ((TextBox)itemsitem).Text = string.Empty;
+                        }
+                        if (itemsitem is DatePicker)
+                        {
+                            ((DatePicker)itemsitem).SelectedDate = DateTime.MinValue;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            LstPerson.ItemsSource = pm.SearchResult(TxtName.Text,TxtDateOfBirth.SelectedDate,TxtEmail.Text);
+            ClearPanel();
         }
     }
 }

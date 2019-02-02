@@ -32,5 +32,6 @@ namespace DataLayerLogic
         /// <param name="id"></param>
         /// <returns></returns>
         Person UpdatePerson(Person person);
+        List<Person> SearchResult(string name = null, DateTime? dateOfBirth = null, string email = null);
     }
 }

@@ -47,5 +47,10 @@ namespace DataLayerLogic.Managers
         {
             throw new NotImplementedException();
         }
+
+        public List<Person> SearchResult(string name = null, DateTime? dateOfBirth = null, string email = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

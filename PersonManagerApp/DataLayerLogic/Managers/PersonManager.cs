@@ -1,21 +1,24 @@
 ﻿using Faker;
 using FizzWare.NBuilder;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using PersonEntities;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace DataLayerLogic.Managers
 {
     internal class PersonManagerFakeDB : IPersonManager
     {
         private int _id = 1;
+        private readonly string filePath = "FakeDB";
         private readonly List<Person> _personFakeDB = new List<Person>();
+        
+        #region Constructor
+        /// <summary>
+        /// PersonManagerFakeDB Constructor
+        /// </summary>
         public PersonManagerFakeDB()
         {
             #region  Create FakeDB in Memory using NBuilder and Faker.Net
@@ -26,153 +29,24 @@ namespace DataLayerLogic.Managers
                 .With(x => x.DateOfBirth = DateTime.Today.AddDays(-RandomNumber.Next(5000, 30000)).Date)
                 .Build();
             #endregion
-            #region Create and write XML
-            XDocument xmlDocument = new XDocument(
-                 new XDeclaration("1.0", "utf-8", "yes"),
-                 new XComment("People Fake DataBase"),
-                 new XElement("People",
 
-                people.Select(person => new XElement("Person", new XAttribute("Id", person.Id),
-                new XElement("Name", person.Name),
-                new XElement("DateOfBirth", person.DateOfBirth.ToShortDateString()),
-                new XElement("Email", person.Email)
-                 ))));
-            // xmlDocument.Save("FakeDB.xml");
-
-            #endregion
-            #region Create and Write CSV
-            //using (TextWriter writer = new StreamWriter(@"FakeDB.csv"))
-            //using (var csv = new CsvWriter(writer))
-            //{
-            //    csv.Configuration.Delimiter = ";";
-            //    csv.Configuration.HasHeaderRecord = true;
-            //    csv.Configuration.AutoMap<Person>();
-            //    csv.WriteHeader<Person>();
-            //    csv.NextRecord();
-            //    csv.WriteRecords(people);
-            //    writer.Flush();
-
-            //}
-            #endregion
-            #region Create and Write TXT
-            //using (StreamWriter writer = new StreamWriter("FakeDB.txt"))
-            //{
-            //    string header = string.Empty;
-            //        int i = 0;
-            //    foreach (var item in typeof(Person).GetProperties())
-            //    {
-            //        if (i>0 && i< typeof(Person).GetProperties().Count())
-            //        {
-            //            header += ",";
-            //        }
-            //        header +=item.Name;
-            //        i++;
-            //    }
-            //    writer.WriteLine(header);
-            //    foreach (var item in people)
-            //    {
-            //        writer.WriteLine($"{item.Id},{item.Name},{item.DateOfBirth.ToShortDateString()},{item.Email}");
-            //    }
-            //}
-            #endregion
-            #region Create and Write Json
-            string jsonresult1 = JsonConvert.SerializeObject(people);
-            // File.WriteAllText("FakeDB.min.json", jsonresult1);
-            string jsonresult = JsonConvert.SerializeObject(people, Formatting.Indented);
-            // File.WriteAllText("FakeDB.json", jsonresult);
-            #endregion
-            #region Create and populate MongoDB
-            //try
-            //{
-            //    string connectionstring = ConfigurationManager.AppSettings["AtlasMongo"];
-            //    MongoClient client = new MongoClient(connectionstring);
-            //    IMongoDatabase db = client.GetDatabase(ConfigurationManager.AppSettings["AtlasMongodatabase"]);
-            //    IMongoCollection<Person> collection = db.GetCollection<Person>(ConfigurationManager.AppSettings["AtlasMongocollection"]);
-
-            //    collection.InsertMany(people);
-
-            //}
-            //catch (Exception e)
-            //{
-
-            //    Console.WriteLine(e.Message);
-            //}
-            #endregion
-            #region Connect to MS SQL and insert data
-            //using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Somee"].ConnectionString))
-            //{
-            //    try
-            //    {
-
-            //        var result = connection.Execute(@"dbo.uspInsertPerson @Name, @DateOfBirth, @Email", people);
-            //    }
-            //    catch (Exception w)
-            //    {
-
-            //        Console.WriteLine(w.Message);
-            //    }
-
-            //}
-            #endregion
-            #region Connect to MYSQL and insert data
-            //using (IDbConnection connection = new MySqlConnection(ConfigurationManager.ConnectionStrings["GearHostMySql"].ConnectionString))
-            //{
-            //    try
-            //    {
-
-            //        int result = connection.Execute($@"call {ConfigurationManager.AppSettings["GearhostMysqlDB"]}.`dbo.uspInsertPerson`( @Name, @DateOfBirth, @Email);", people);
-            //    }
-            //    catch (Exception w)
-            //    {
-
-            //        Console.WriteLine(w.Message);
-            //    }
-
-            //}
-            #endregion
-            #region Connect to PostgreSql and populate table
-            //try
-            //{
-
-            //    using (IDbConnection connection = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["ElephantPostgreSql"].ConnectionString))
-            //    {
-
-            //      int result = connection.Execute($"Select \"MySchema\".\"dbo_uspInsertPerson\"( @Name, @DateOfBirth, @Email)", people);
-            //        if (result>0)
-            //        {
-            //            Console.WriteLine("Success!");
-            //        }
-            //        else
-            //        {
-            //            Console.WriteLine("Insertion Failed!");
-            //        }
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-
-            //    Console.WriteLine(e.Message);
-            //}
-            #endregion
-            #region Create and write TOML
-
-            //var table = Toml.Create();
-            //foreach (var item in people)
-            //{
-
-            //table.Add($"Person{item.Id}",item);
-            //}
-            //Toml.WriteFile(table, $"FakeDB{Toml.FileExtension}");
-
-            #endregion
             foreach (Person item in people.ToArray())
             {
                 AddPerson(item);
-
             }
+           
         }
+        #endregion
+
+        #region Create new Person
+        /// <summary>
+        /// Add a person to the fake database
+        /// </summary>
+        /// <param name="person">person object</param>
+        /// <returns></returns>
         public Person AddPerson(Person person)
         {
+           
             Person addedPerson;
             _personFakeDB.Add(addedPerson = new Person
             {
@@ -184,21 +58,27 @@ namespace DataLayerLogic.Managers
             return addedPerson;
         }
 
+        #endregion
+
+        #region Read Database
+
+        /// <summary>
+        /// returns the people stored in the database
+        /// </summary>
+        /// <returns></returns>
         public List<Person> GetPersons()
         {
             return new List<Person>(_personFakeDB);
         }
+        #endregion
 
-        public bool DeletePerson(Person p)
-        {
-            if (p == null)
-            {
-                throw new InvalidDataException("Person cannot be null");
-            }
-            return _personFakeDB.RemoveAll(x => x.Id == p.Id) > 0;
+        #region Update Person
 
-        }
-
+        /// <summary>
+        /// You can update a person properties except its id
+        /// </summary>
+        /// <param name="person">person id need to be valid</param>
+        /// <returns></returns>
         public Person UpdatePerson(Person person)
         {
             Person personFromList = _personFakeDB.FirstOrDefault(x => x.Id == person.Id);
@@ -209,7 +89,61 @@ namespace DataLayerLogic.Managers
             }
             return null;
         }
+        #endregion
 
+        #region Delete Person
+
+        /// <summary>
+        /// You can delete a person from the database
+        /// </summary>
+        /// <param name="p">person id need to be valid</param>
+        /// <returns></returns>
+        public bool DeletePerson(Person p)
+        {
+            if (p == null)
+            {
+                throw new InvalidDataException("Person cannot be null");
+            }
+            return _personFakeDB.RemoveAll(x => x.Id == p.Id) > 0;
+
+        }
+
+        #endregion
+
+        #region Search query in database
+        /// <summary>
+        /// Search the database for records that meets our parameters
+        /// </summary>
+        /// <param name="name">Checks that any record contains this name</param>
+        /// <param name="dateOfBirth">looks for records from this year</param>
+        /// <param name="email">checks that any record contains this email</param>
+        /// <returns>returns the list of people whos passed the filtering</returns>
+        public List<Person> SearchResult(string name = null, DateTime? dateOfBirth = null, string email = null)
+        {
+            List<Person> result = GetPersons();
+            bool validname = !string.IsNullOrWhiteSpace(name);
+            bool validEmail = !string.IsNullOrWhiteSpace(email);
+            bool validDate = dateOfBirth > DateTime.MinValue;
+
+            if (!validname && !validDate && !validEmail)
+            {
+                return result;
+            }
+            if (validname)
+            {
+                result = result.Where(x => x.Name.ToLower().Contains(name.ToLower())).ToList();
+            }
+            if (validDate)
+            {
+                result = result.Where(x => x.DateOfBirth.Year == dateOfBirth.Value.Year).ToList();
+            }
+            if (validEmail)
+            {
+                result = result.Where(x => x.Email.ToLower().Contains(email.ToLower())).ToList();
+            }
+            return result;
+        }
+        #endregion
 
     }
 }

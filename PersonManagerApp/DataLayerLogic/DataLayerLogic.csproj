@@ -108,10 +108,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CreateFileTypes.cs" />
     <Compile Include="DataAccess.cs" />
     <Compile Include="DLLFacade.cs" />
     <Compile Include="IPersonManager.cs" />
     <Compile Include="Managers\PersonManager.cs" />
+    <Compile Include="Managers\PersonManagerCSV.cs" />
+    <Compile Include="Managers\PersonManagerToml.cs" />
+    <Compile Include="Managers\PersonManagerXml.cs" />
     <Compile Include="Managers\ProxyPersonManager.cs" />
     <Compile Include="Managers\TxtPersonManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -54,6 +54,8 @@
             <Button Margin="5" x:Name="AddPerson" Click="AddPerson_Click" Content="Create" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button Margin="5" x:Name="Upadate" IsEnabled="False" Click="Update_Click" Content="Update" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button Margin="5" x:Name="Delete" IsEnabled="False" Click="Delete_Click" Content="Delete" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button Margin="5" x:Name="Search" Click="Search_Click" Content="Search" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
         </WrapPanel>
 
     </Grid>

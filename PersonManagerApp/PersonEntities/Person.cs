@@ -14,7 +14,7 @@ namespace PersonEntities
         public string Email { get; set; }
         public override string ToString()
         {
-            return $"{Id},{Name},{DateOfBirth},{Email}"; 
+            return $"{Id},{Name},{DateOfBirth.ToShortDateString()},{Email}"; 
         }
     }
 }
