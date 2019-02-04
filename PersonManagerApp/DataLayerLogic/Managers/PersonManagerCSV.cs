@@ -1,13 +1,11 @@
-﻿using CsvHelper;
-using PersonEntities;
+﻿using PersonEntities;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace DataLayerLogic.Managers
 {
-    public class PersonManagerCSV : IPersonManager
+    internal class PersonManagerCSV : IPersonManager
     {
         private readonly string filePath = "FakeDB.csv";
         private readonly List<Person> CSVDataBase = new List<Person>();
@@ -18,16 +16,12 @@ namespace DataLayerLogic.Managers
         /// </summary>
         public PersonManagerCSV()
         {
-
-            using (StreamReader reader = new StreamReader(filePath))
-            using (CsvReader cs = new CsvReader(reader))
+            List<Person> people = ReadFileTypes.ReadCSVToList<Person>(filePath).ToList();
+            foreach (Person item in people)
             {
-                IEnumerable<Person> people = cs.GetRecords<Person>();
-                foreach (Person item in people)
-                {
-                    AddPerson(item);
-                }
+                AddPerson(item);
             }
+
         }
         #endregion
 
@@ -36,48 +30,16 @@ namespace DataLayerLogic.Managers
         /// Add a person to the CSV database
         /// </summary>
         /// <param name="person">person object</param>
-        /// <returns></returns>
+        /// <returns>Returns the added Person</returns>
         public Person AddPerson(Person person)
         {
-            if (person != null)
+            bool wasnull = false;
+            Person addedPerson = CommonPersonManager.CommonAddPerson(person, CSVDataBase,ref wasnull);
+            if (wasnull)
             {
-                bool wasnull = false;
-                Person addedPerson = new Person();
-                if (person.Id == null)
-                {
-                    addedPerson.Id = CSVDataBase.Last().Id + 1;
-                    wasnull = true;
-                }
-                else
-                {
-                    addedPerson.Id = person.Id;
-                }
-                if (!string.IsNullOrWhiteSpace(person.Name))
-                {
-                    addedPerson.Name = person.Name;
-                }
-                if (person.DateOfBirth != null)
-                {
-                    addedPerson.DateOfBirth = person.DateOfBirth;
-                }
-
-                if (!string.IsNullOrWhiteSpace(person.Email))
-                {
-                    addedPerson.Email = person.Email;
-                }
-
-                CSVDataBase.Add(addedPerson);
-
-                if (wasnull)
-                {
-                    WriteDb();
-                }
-                return addedPerson;
+                CSVDataBase.CreateCSV(filePath);
             }
-            else
-            {
-                return null;
-            }
+            return addedPerson;
         }
         #endregion
 
@@ -86,7 +48,7 @@ namespace DataLayerLogic.Managers
         /// <summary>
         /// returns the people stored in the CSV database
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns a List<Person> from the database</returns>
         public List<Person> GetPersons()
         {
             return new List<Person>(CSVDataBase);
@@ -99,32 +61,12 @@ namespace DataLayerLogic.Managers
         /// You can update a person properties except its id
         /// </summary>
         /// <param name="person">person id need to be valid</param>
-        /// <returns></returns>
+        /// <returns>Returns the updated Person</returns>
         public Person UpdatePerson(Person person)
         {
-            Person selectedPerson = CSVDataBase.FirstOrDefault(x => x.Id == person.Id);
-            if (selectedPerson != null)
-            {
-                if (!string.IsNullOrWhiteSpace(person.Name))
-                {
-                    selectedPerson.Name = person.Name;
-                }
-                if (person.DateOfBirth != null)
-                {
-                    selectedPerson.DateOfBirth = person.DateOfBirth;
-                }
-
-                if (!string.IsNullOrWhiteSpace(person.Email))
-                {
-                    selectedPerson.Email = person.Email;
-                }
-                WriteDb();
+            Person selectedPerson = CommonPersonManager.CommonUpdatePerson(person, CSVDataBase);
+                CSVDataBase.CreateCSV(filePath);
                 return selectedPerson;
-            }
-            else
-            {
-                return null;
-            }
         }
         #endregion
 
@@ -137,39 +79,10 @@ namespace DataLayerLogic.Managers
         /// <returns></returns>
         public bool DeletePerson(Person person)
         {
-            if (person != null)
-            {
-                int count = CSVDataBase.RemoveAll(x => x.Id == person.Id);
-                WriteDb();
-                return count > 0;
-            }
-            else
-            {
-                return false;
-            }
+            bool result = CommonPersonManager.CommonDeleteIPerson(person, CSVDataBase);
+            CSVDataBase.CreateCSV(filePath);
+            return result;
         }
-        #endregion
-
-        #region Refresh CSV Database
-        /// <summary>
-        /// Writes CSVdatabase to CSV
-        /// </summary>
-        private void WriteDb()
-        {
-            using (TextWriter writer = new StreamWriter(filePath))
-            using (CsvWriter csv = new CsvWriter(writer))
-            {
-                csv.Configuration.Delimiter = ";";
-                csv.Configuration.HasHeaderRecord = true;
-                csv.Configuration.AutoMap<Person>();
-                csv.WriteHeader<Person>();
-                csv.NextRecord();
-                csv.WriteRecords(CSVDataBase);
-                writer.Flush();
-
-            }
-        }
-
         #endregion
 
         #region Search query in database
@@ -183,27 +96,7 @@ namespace DataLayerLogic.Managers
         public List<Person> SearchResult(string name = null, DateTime? dateOfBirth = null, string email = null)
         {
             List<Person> result = GetPersons();
-            bool validname = !string.IsNullOrWhiteSpace(name);
-            bool validEmail = !string.IsNullOrWhiteSpace(email);
-            bool validDate = dateOfBirth > DateTime.MinValue;
-
-            if (!validname && !validDate && !validEmail)
-            {
-                return result;
-            }
-            if (validname)
-            {
-                result = result.Where(x => x.Name.ToLower().Contains(name.ToLower())).ToList();
-            }
-            if (validDate)
-            {
-                result = result.Where(x => x.DateOfBirth.Year == dateOfBirth.Value.Year).ToList();
-            }
-            if (validEmail)
-            {
-                result = result.Where(x => x.Email.ToLower().Contains(email.ToLower())).ToList();
-            }
-            return result;
+            return CommonPersonManager.CommonSearch(result, name, dateOfBirth, email).ToList();
         }
         #endregion
     }

@@ -112,13 +112,17 @@
     <Compile Include="DataAccess.cs" />
     <Compile Include="DLLFacade.cs" />
     <Compile Include="IPersonManager.cs" />
+    <Compile Include="Managers\CommonPersonManager.cs" />
     <Compile Include="Managers\PersonManager.cs" />
     <Compile Include="Managers\PersonManagerCSV.cs" />
+    <Compile Include="Managers\PersonManagerJson.cs" />
     <Compile Include="Managers\PersonManagerToml.cs" />
     <Compile Include="Managers\PersonManagerXml.cs" />
     <Compile Include="Managers\ProxyPersonManager.cs" />
     <Compile Include="Managers\TxtPersonManager.cs" />
+    <Compile Include="MSSqlAccess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadFileTypes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PersonEntities\PersonEntities.csproj">

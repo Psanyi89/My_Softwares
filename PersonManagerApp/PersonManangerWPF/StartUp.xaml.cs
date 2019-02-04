@@ -17,7 +17,16 @@ namespace PersonManangerWPF
         {
             InitializeComponent();
             pm = new DLLFacade().GetPersonManagerMemory();
+            try
+            {
             LstPerson.ItemsSource = pm.GetPersons();
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show($"{ex.Message}\n{ex.StackTrace}","Error!!!444",MessageBoxButton.OK,MessageBoxImage.Error,MessageBoxResult.OK);
+            }
             Options.ItemsSource = new DataAccess().AccesPoint;
 
         }
@@ -40,9 +49,17 @@ namespace PersonManangerWPF
                 person.Name = TxtName.Text;
                 person.DateOfBirth = Convert.ToDateTime(TxtDateOfBirth.Text);
                 person.Email = TxtEmail.Text;
-                pm.UpdatePerson(person);
-                ClearPanel();
+                try
+                {
+                    pm.UpdatePerson(person);
+                }
+                catch ( Exception ex)
+                {
+
+                    MessageBox.Show($"{ex.Message}\n{ex.StackTrace}", "Error!!!444", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                }
             }
+                ClearPanel();
             LstPerson.ItemsSource = pm.GetPersons();
         }
 
@@ -53,7 +70,16 @@ namespace PersonManangerWPF
             {
                 return;
             }
-            pm.DeletePerson(person);
+            try
+            {
+                pm.DeletePerson(person);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show($"{ex.Message}\n{ex.StackTrace}", "Error!!!444", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+            }
             ClearPanel();
             LstPerson.ItemsSource = pm.GetPersons();
         }
@@ -71,7 +97,17 @@ namespace PersonManangerWPF
                     DateOfBirth = Convert.ToDateTime(TxtDateOfBirth.Text),
                     Email = TxtEmail.Text
                 };
-                pm.AddPerson(Person);
+
+                try
+                {
+                    pm.AddPerson(Person);
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show($"{ex.Message}\n{ex.StackTrace}", "Error!!!444", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+                }
                 LstPerson.ItemsSource = pm.GetPersons();
                 ClearPanel();
             }
@@ -110,6 +146,10 @@ namespace PersonManangerWPF
             {
                 pm = new DLLFacade().GetPersonManagerToml();
             }
+            else if (Options.SelectedIndex == 5)
+            {
+                pm = new DLLFacade().GetPersonManagerJson();
+            }
             LstPerson.ItemsSource = pm.GetPersons();
         }
         private void ClearPanel()
@@ -135,7 +175,17 @@ namespace PersonManangerWPF
 
         private void Search_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+
             LstPerson.ItemsSource = pm.SearchResult(TxtName.Text,TxtDateOfBirth.SelectedDate,TxtEmail.Text);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show($"{ex.Message}\n{ex.StackTrace}", "Error!!!444", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+            }
             ClearPanel();
         }
     }

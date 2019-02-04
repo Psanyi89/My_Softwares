@@ -19,13 +19,9 @@ namespace DataLayerLogic.Managers
         /// </summary>
         public PersonManagerXml()
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(List<Person>));
-
-            using (StreamReader reader = new StreamReader(filePath))
-            {
-                List<Person> input = (List<Person>)serializer.Deserialize(reader);
+            List<Person> input = ReadFileTypes.ReadXmlToList<Person>(filePath).ToList();
                 input.ForEach(x => AddPerson(x));
-            }
+            
         }
         #endregion
 
@@ -36,32 +32,9 @@ namespace DataLayerLogic.Managers
         /// <param name="person">person object</param>
         /// <returns></returns>
         public Person AddPerson(Person person)
-        {
-            if (person != null)
-            {
-                bool wasnull = false;
-                Person addedPerson = new Person();
-                if (person.Id == null)
-                {
-                    addedPerson.Id = xmlDatabase.Last().Id + 1;
-                    wasnull = true;
-                }
-                else
-                {
-                    addedPerson.Id = person.Id;
-                }
-                if (!string.IsNullOrWhiteSpace(person.Name))
-                {
-                    addedPerson.Name = person.Name;
-                }
-
-                addedPerson.DateOfBirth = person.DateOfBirth;
-
-                if (!string.IsNullOrWhiteSpace(person.Email))
-                {
-                    addedPerson.Email = person.Email;
-                }
-                xmlDatabase.Add(addedPerson);
+        {            
+            bool wasnull = false;
+            Person addedPerson = CommonPersonManager.CommonAddPerson(person, xmlDatabase, ref wasnull);
                 if (wasnull == true)
                 {
                     XDocument doc = XDocument.Load(filePath);
@@ -75,11 +48,7 @@ namespace DataLayerLogic.Managers
                     doc.Save(filePath);
                 }
                 return addedPerson;
-            }
-            else
-            {
-                return null;
-            }
+        
         }
         #endregion
 
@@ -104,18 +73,13 @@ namespace DataLayerLogic.Managers
         /// <returns></returns>
         public Person UpdatePerson(Person person)
         {
-            if (person == null)
+            if (person == null ||(person.Id==null))
             {
                 return null;
             }
             else
             {
-                if (person.Id == null)
-                {
-                    return null;
-                }
-                else
-                {
+                
                     Person updatedperson = xmlDatabase.FirstOrDefault(x => x.Id == person.Id);
                     if (updatedperson != null)
                     {
@@ -142,7 +106,7 @@ namespace DataLayerLogic.Managers
                         doc.Save(filePath);
                     }
                     return updatedperson;
-                }
+                
             }
         }
 
@@ -153,7 +117,7 @@ namespace DataLayerLogic.Managers
         /// <summary>
         /// You can delete an existing person from the Xml database
         /// </summary>
-        /// <param name="p">person id need to be valid</param>
+        /// <param name="person">person id need to be valid</param>
         /// <returns></returns>
         public bool DeletePerson(Person person)
         {

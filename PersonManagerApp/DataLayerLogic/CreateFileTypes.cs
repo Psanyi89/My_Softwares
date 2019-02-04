@@ -1,20 +1,16 @@
 ﻿using CsvHelper;
-using System;
+using MongoDB.Driver;
+using Nett;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
-using Nett;
-using FizzWare.NBuilder;
-using System.Configuration;
-using MongoDB.Driver;
 
 namespace DataLayerLogic
 {
-   public static class CreateFileTypes
+    public static class CreateFileTypes
     {
 
         #region Create and write XML
@@ -23,13 +19,13 @@ namespace DataLayerLogic
         /// </summary>
         /// <typeparam name="T">Sets the type of your list</typeparam>
         /// <param name="Collection">your list of objects</param>
-        /// <param name="filePath"> filepath with filename</param>
-        public static void CreatXML<T>(this ICollection<T> Collection,string filePath)
+        /// <param name="filePath"> file path, filename and extension</param>
+        public static void CreatXML<T>(this ICollection<T> Collection, string filePath)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(List<T>));
-            using (StreamWriter writer = new StreamWriter($"{filePath}.xml"))
+            XmlSerializer serializer = new XmlSerializer(typeof(ICollection<T>));
+            using (StreamWriter writer = new StreamWriter(filePath))
             {
-                serializer.Serialize(writer, Collection.ToList());
+                serializer.Serialize(writer, Collection);
             }
         }
 
@@ -42,18 +38,23 @@ namespace DataLayerLogic
         /// </summary>
         /// <typeparam name="T">Type of the object</typeparam>
         /// <param name="Collection">your collection of objects</param>
-        /// <param name="filePath">filepath with filename</param>
-        public static void CreateCSV<T>(this ICollection<T> Collection, string filePath)
+        /// <param name="filePath">file path, name and extension</param>
+        /// <param name="delimiter">delimitering character in string format</param>
+        /// <param name="hasHeader">with header row or not</param>
+        public static void CreateCSV<T>(this ICollection<T> Collection, string filePath, string delimiter = ";", bool hasHeader = true)
         {
 
-            using (TextWriter writer = new StreamWriter($"{filePath}.csv"))
-            using (var csv = new CsvWriter(writer))
+            using (TextWriter writer = new StreamWriter($"{filePath}"))
+            using (CsvWriter csv = new CsvWriter(writer))
             {
-                csv.Configuration.Delimiter = ";";
-                csv.Configuration.HasHeaderRecord = true;
+                csv.Configuration.Delimiter = delimiter;
+                csv.Configuration.HasHeaderRecord = hasHeader;
                 csv.Configuration.AutoMap<T>();
-                csv.WriteHeader<T>();
-                csv.NextRecord();
+                if (hasHeader)
+                {
+                    csv.WriteHeader<T>();
+                    csv.NextRecord();
+                }
                 csv.WriteRecords(Collection);
                 writer.Flush();
 
@@ -67,39 +68,43 @@ namespace DataLayerLogic
         /// </summary>
         /// <typeparam name="T">Type of the object</typeparam>
         /// <param name="Collection">your collection of objects</param>
-        /// <param name="filePath">filepath with filename</param>
-        public static void CreateTxt<T>(this ICollection<T> Collection, string filePath)
+        /// <param name="filePath">filepath with filename and extension</param>
+        public static void CreateTxt<T>(this ICollection<T> Collection, string filePath, char delimiter = ',', bool headerrow = true)
         {
-            using (StreamWriter writer = new StreamWriter($"{filePath}.txt"))
+            using (StreamWriter writer = new StreamWriter(filePath))
             {
-                string header = string.Empty;
-                int i = 0;
-                foreach (var item in typeof(T).GetProperties())
+                if (headerrow)
                 {
-                    if (i > 0 && i < typeof(T).GetProperties().Count())
+                    string header = string.Empty;
+                    int i = 0;
+                    foreach (System.Reflection.PropertyInfo item in typeof(T).GetProperties())
                     {
-                        header += ",";
+                        if (i > 0 && i < typeof(T).GetProperties().Count())
+                        {
+                            header += delimiter;
+                        }
+                        header += item.Name;
+                        i++;
                     }
-                    header += item.Name;
-                    i++;
+                    writer.WriteLine(header);
+
                 }
-                writer.WriteLine(header);
-                foreach (var item in Collection)
+                foreach (T item in Collection)
                 {
-                string text = string.Empty;
+                    string text = string.Empty;
                     int j = 0;
-                    foreach (var attribute in item.GetType().GetProperties())
+                    foreach (System.Reflection.PropertyInfo attribute in item.GetType().GetProperties())
                     {
 
                         if (j > 0 && j < item.GetType().GetProperties().Count())
                         {
-                            text += ",";
+                            text += delimiter;
                         }
                         text += attribute.GetValue(item).ToString();
                         j++;
                     }
-                    
-                writer.WriteLine(text);
+
+                    writer.WriteLine(text);
                 }
             }
         }
@@ -116,17 +121,18 @@ namespace DataLayerLogic
         /// <param name="collection">Name of your collection</param>
         /// <param name="filePath">filepath with file name</param>
         /// <param name="minify">minify or not the result</param>
-        public static void CreateJson<T>(this ICollection<T> collection, string filePath, bool minify=false)
+        public static void CreateJson<T>(this ICollection<T> collection, string filePath, bool minify = false)
         {
-            if(minify)
+            if (minify)
             {
+                string[] temp = filePath.Split('.');
                 string jsonresult1 = JsonConvert.SerializeObject(collection);
-                File.WriteAllText($"{filePath}.min.json", jsonresult1);
+                File.WriteAllText($"{temp[0]}.min.json", jsonresult1);
             }
             else
             {
                 string jsonresult = JsonConvert.SerializeObject(collection, Formatting.Indented);
-                File.WriteAllText($"{filePath}.json", jsonresult);
+                File.WriteAllText(filePath, jsonresult);
             }
 
         }
@@ -140,14 +146,14 @@ namespace DataLayerLogic
         /// <typeparam name="T">Type of the object</typeparam>
         /// <param name="collection">object to printout</param>
         /// <param name="filePath">filepath with file name</param>
-        public static void CreateToml<T>(this T collection,string filePath)
+        public static void CreateToml<T>(this T collection, string filePath)
         {
-            var table = Toml.Create(collection);
+            TomlTable table = Toml.Create(collection);
             Toml.WriteFile(table, $"{filePath}{Toml.FileExtension}");
         }
 
         #endregion
-        
+
         #region Create and populate MongoDB
         /// <summary>
         /// connect to MongoDB database
@@ -157,7 +163,7 @@ namespace DataLayerLogic
         /// <param name="constringname">Connectionstring name from Appconfig</param>
         /// <param name="databasename">Database name stored in Appconfig</param>
         /// <param name="collectionname">Collection name stored in AppConfig</param>
-        public static void ConnectToMongoDB<T>(this ICollection<T> classObject, 
+        public static void ConnectToMongoDB<T>(this ICollection<T> classObject,
                                                          string constringname,
                                                          string databasename,
                                                          string collectionname)
@@ -169,23 +175,6 @@ namespace DataLayerLogic
             collection.InsertMany(classObject);
         }
 
-        #endregion
-
-        #region Connect to MS SQL and insert data
-        //using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["Somee"].ConnectionString))
-        //{
-        //    try
-        //    {
-
-        //        var result = connection.Execute(@"dbo.uspInsertPerson @Name, @DateOfBirth, @Email", people);
-        //    }
-        //    catch (Exception w)
-        //    {
-
-        //        Console.WriteLine(w.Message);
-        //    }
-
-        //}
         #endregion
 
         #region Connect to MYSQL and insert data

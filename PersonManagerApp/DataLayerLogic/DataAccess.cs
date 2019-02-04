@@ -20,7 +20,9 @@ namespace DataLayerLogic
 
             "Xml Database",
 
-            "Toml Database"
+            "Toml Database",
+
+            "Json Database"
         };
         #endregion
     }

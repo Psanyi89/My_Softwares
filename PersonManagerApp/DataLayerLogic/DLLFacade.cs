@@ -64,5 +64,16 @@ namespace DataLayerLogic
             return new PersonManagerToml();
         }
         #endregion
+        
+        #region Json file database manager interface
+        /// <summary>
+        /// Call in Json database manager interface
+        /// </summary>
+        /// <returns>CRUD and search methods</returns>
+        public IPersonManager GetPersonManagerJson()
+        {
+            return new PersonManagerJson();
+        }
+        #endregion
     }
 }

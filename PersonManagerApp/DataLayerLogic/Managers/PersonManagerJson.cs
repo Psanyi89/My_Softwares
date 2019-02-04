@@ -1,46 +1,40 @@
 ﻿using PersonEntities;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace DataLayerLogic.Managers
 {
-    internal class TxtPersonManager : IPersonManager
+    internal class PersonManagerJson : IPersonManager
     {
-        private readonly List<Person> TxtDBdatabase = new List<Person>();
-        private readonly string filePath = "FakeDB.txt";
+        private readonly List<Person> JsonDataBase = new List<Person>();
+        private readonly string filePath = "FakeDB.json";
 
         #region Constructor
         /// <summary>
-        /// TxtPersonManager Constructor
+        /// PersonManagerJson Constructor
         /// </summary>
-        public TxtPersonManager()
+        public PersonManagerJson()
         {
-            List<Person> people = ReadFileTypes.ReadTxtFileToList<Person>(filePath, true).ToList();
-            foreach (Person item in people)
-            {
-                AddPerson(item);
-            }
+            List<Person> people = ReadFileTypes.ReadJsonToList<Person>(filePath).ToList();
+            people.ForEach(x => AddPerson(x));
         }
         #endregion
 
         #region Create new Person
         /// <summary>
-        /// Add a person to the Txt database
+        /// Add a person to the Jsondatabase
         /// </summary>
         /// <param name="person">person object</param>
-        /// <returns></returns>
+        /// <returns>Returns the added person object</returns>
         public Person AddPerson(Person person)
         {
-
             bool wasnull = false;
-            Person addedPerson = CommonPersonManager.CommonAddPerson(person, TxtDBdatabase,ref wasnull);
-            if (wasnull == true)
+            Person addedPerson = CommonPersonManager.CommonAddPerson(person, JsonDataBase, ref wasnull);
+            if (wasnull)
             {
-                TxtDBdatabase.CreateTxt(filePath);
+                JsonDataBase.CreateJson(filePath);
             }
-
             return addedPerson;
         }
         #endregion
@@ -48,13 +42,12 @@ namespace DataLayerLogic.Managers
         #region Read Database
 
         /// <summary>
-        /// returns the people stored in the Txt database
+        /// returns the people stored in the database
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns the list of People stored in Json database</returns>
         public List<Person> GetPersons()
         {
-            return new List<Person>(TxtDBdatabase);
-
+            return new List<Person>(JsonDataBase);
         }
         #endregion
 
@@ -64,26 +57,26 @@ namespace DataLayerLogic.Managers
         /// You can update a person properties except its id
         /// </summary>
         /// <param name="person">person id need to be valid</param>
-        /// <returns></returns>
+        /// <returns>Returns the updated person</returns>
         public Person UpdatePerson(Person person)
         {
-            Person updatedperson = CommonPersonManager.CommonUpdatePerson(person, TxtDBdatabase);
-                TxtDBdatabase.CreateTxt(filePath);
-            return updatedperson;
+            Person updatedPerson = CommonPersonManager.CommonUpdatePerson(person, JsonDataBase);
+            JsonDataBase.CreateJson(filePath);
+            return updatedPerson;
         }
         #endregion
 
         #region Delete Person
 
         /// <summary>
-        /// You can delete an existing person from the Txt database
+        /// You can delete a person from the database
         /// </summary>
         /// <param name="p">person id need to be valid</param>
-        /// <returns></returns>
+        /// <returns>Returns that the process was successful or not</returns>
         public bool DeletePerson(Person person)
         {
-            bool result = CommonPersonManager.CommonDeleteIPerson(person, TxtDBdatabase);
-            TxtDBdatabase.CreateTxt(filePath);
+            bool result = CommonPersonManager.CommonDeleteIPerson(person, JsonDataBase);
+            JsonDataBase.CreateJson(filePath);
             return result;
         }
         #endregion
@@ -103,5 +96,4 @@ namespace DataLayerLogic.Managers
         }
         #endregion
     }
-
 }
