@@ -11,8 +11,8 @@ namespace DataLayerLogic.Managers
     internal class PersonManagerXml : IPersonManager
     {
         private readonly List<Person> xmlDatabase = new List<Person>();
-        private readonly string filePath = "FakeDB.xml";
-     
+        private readonly string filePath = Path.Combine("Resources", "FakeDB.xml");
+
         #region Constructor
         /// <summary>
         /// PersonManagerXml Costructor
@@ -20,8 +20,8 @@ namespace DataLayerLogic.Managers
         public PersonManagerXml()
         {
             List<Person> input = ReadFileTypes.ReadXmlToList<Person>(filePath).ToList();
-                input.ForEach(x => AddPerson(x));
-            
+            input.ForEach(x => AddPerson(x));
+
         }
         #endregion
 
@@ -32,23 +32,23 @@ namespace DataLayerLogic.Managers
         /// <param name="person">person object</param>
         /// <returns></returns>
         public Person AddPerson(Person person)
-        {            
+        {
             bool wasnull = false;
             Person addedPerson = CommonPersonManager.CommonAddPerson(person, xmlDatabase, ref wasnull);
-                if (wasnull == true)
-                {
-                    XDocument doc = XDocument.Load(filePath);
-                    XElement xElement = new XElement("Person",
-                        new XElement("Id", addedPerson.Id),
-                        new XElement("Name", addedPerson.Name),
-                        new XElement("DateOfBirth", addedPerson.DateOfBirth),
-                        new XElement("Email", addedPerson.Email)
-                        );
-                    doc.Root.Add(xElement);
-                    doc.Save(filePath);
-                }
-                return addedPerson;
-        
+            if (wasnull == true)
+            {
+                XDocument doc = XDocument.Load(filePath);
+                XElement xElement = new XElement("Person",
+                    new XElement("Id", addedPerson.Id),
+                    new XElement("Name", addedPerson.Name),
+                    new XElement("DateOfBirth", addedPerson.DateOfBirth),
+                    new XElement("Email", addedPerson.Email)
+                    );
+                doc.Root.Add(xElement);
+                doc.Save(filePath);
+            }
+            return addedPerson;
+
         }
         #endregion
 
@@ -73,40 +73,40 @@ namespace DataLayerLogic.Managers
         /// <returns></returns>
         public Person UpdatePerson(Person person)
         {
-            if (person == null ||(person.Id==null))
+            if (person == null || (person.Id == 0))
             {
                 return null;
             }
             else
             {
-                
-                    Person updatedperson = xmlDatabase.FirstOrDefault(x => x.Id == person.Id);
-                    if (updatedperson != null)
+
+                Person updatedperson = xmlDatabase.FirstOrDefault(x => x.Id == person.Id);
+                if (updatedperson != null)
+                {
+                    XDocument doc = XDocument.Load(filePath);
+                    XElement update = doc.Descendants("Person").
+                        Where(x =>
+                        x.Element("Id").Value.Equals(person.Id.ToString())).
+                        First();
+                    if (!string.IsNullOrWhiteSpace(person.Name))
                     {
-                        XDocument doc = XDocument.Load(filePath);
-                        XElement update = doc.Descendants("Person").
-                            Where(x =>
-                            x.Element("Id").Value.Equals(person.Id.ToString())).
-                            First();
-                        if (!string.IsNullOrWhiteSpace(person.Name))
-                        {
-                            updatedperson.Name = person.Name;
-                            update.SetElementValue("Name", person.Name);
-                        }
-                        if (person.DateOfBirth != null)
-                        {
-                            updatedperson.DateOfBirth = person.DateOfBirth;
-                            update.SetElementValue("DateOfBirth", person.DateOfBirth);
-                        }
-                        if (!string.IsNullOrWhiteSpace(person.Email))
-                        {
-                            updatedperson.Email = person.Email;
-                            update.SetElementValue("Email", person.Email);
-                        }
-                        doc.Save(filePath);
+                        updatedperson.Name = person.Name;
+                        update.SetElementValue("Name", person.Name);
                     }
-                    return updatedperson;
-                
+                    if (person.DateOfBirth != null)
+                    {
+                        updatedperson.DateOfBirth = person.DateOfBirth;
+                        update.SetElementValue("DateOfBirth", person.DateOfBirth);
+                    }
+                    if (!string.IsNullOrWhiteSpace(person.Email))
+                    {
+                        updatedperson.Email = person.Email;
+                        update.SetElementValue("Email", person.Email);
+                    }
+                    doc.Save(filePath);
+                }
+                return updatedperson;
+
             }
         }
 
@@ -124,7 +124,7 @@ namespace DataLayerLogic.Managers
             if (person != null)
             {
                 int count = 0;
-                if (person.Id != null)
+                if (person.Id != 0)
                 {
                     XDocument doc = XDocument.Load(filePath);
                     XElement remove = doc.Descendants("Person").

@@ -22,7 +22,14 @@ namespace DataLayerLogic
 
             "Toml Database",
 
-            "Json Database"
+            "Json Database",
+
+            "LocalDB Database",
+
+            "SqLite Database",
+
+            "Binary Database"
+
         };
         #endregion
     }

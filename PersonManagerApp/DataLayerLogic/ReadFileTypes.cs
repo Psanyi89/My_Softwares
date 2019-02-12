@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-
+using System.Runtime.Serialization.Formatters.Binary;
 namespace DataLayerLogic
 {
    public static class ReadFileTypes
@@ -124,8 +124,8 @@ namespace DataLayerLogic
         /// <typeparam name="T">Class Type</typeparam>
         /// <param name="filePath">file path and name</param>
         /// <returns>Returns an object</returns>
-        public static T ReadTomlToList<T>( string filePath) where T: class, new()
-      {
+        public static T ReadTomlToList<T>( string filePath) where T : class, new()
+        {
             var result = Toml.ReadFile<T>($"{filePath}{Toml.FileExtension}");
 
             return result ?? throw new FileLoadException("File cannot be found or Empty");
@@ -139,6 +139,23 @@ namespace DataLayerLogic
             return JsonConvert.DeserializeObject<ICollection<T>>(jsonText) ?? throw new FileLoadException
                 ("File cannot be found or empty, or structures is not identical to the refered class");
             
+        }
+        #endregion
+
+        #region Binary file to ICollection<T>
+        /// <summary>
+        /// Deserializes a binary file to the T type of object
+        /// </summary>
+        /// <typeparam name="T">Type of object</typeparam>
+        /// <param name="filePath">file path, name and extension</param>
+        /// <returns>REturns the T type of result</returns>
+        public static T ReadBinaryFile<T>(string filePath)
+        {
+            using (Stream stream= File.Open(filePath,FileMode.Open))
+            {
+                BinaryFormatter binaryFormatter =new BinaryFormatter();
+                return (T)binaryFormatter.Deserialize(stream);
+            }
         }
         #endregion
     }

@@ -1,6 +1,7 @@
 ﻿using PersonEntities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace DataLayerLogic.Managers
@@ -8,7 +9,7 @@ namespace DataLayerLogic.Managers
     internal class PersonManagerJson : IPersonManager
     {
         private readonly List<Person> JsonDataBase = new List<Person>();
-        private readonly string filePath = "FakeDB.json";
+        private readonly string filePath = Path.Combine("Resources", "FakeDB.json");
 
         #region Constructor
         /// <summary>

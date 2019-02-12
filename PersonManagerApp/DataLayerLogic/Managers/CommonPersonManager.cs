@@ -16,7 +16,7 @@ namespace DataLayerLogic.Managers
         /// <typeparam name="T">Type IPerson type</typeparam>
         /// <param name="limit">number of record in the ICollection</param>
         /// <returns>Returns a number of IPerson type objects in a ICollection</returns>
-        public static ICollection<T> GenerateIPersonCollection<T>(int limit)where T: IPerson
+        public static ICollection<T> GenerateIPersonCollection<T>(int limit) where T : IPerson
         {
             ICollection<T> people = Builder<T>.CreateListOfSize(limit).All().
                With(x => x.Name = Name.FullName())
@@ -43,9 +43,9 @@ namespace DataLayerLogic.Managers
             }
 
             T addedPerson = new T();
-            if (person.Id == null)
+            if (person.Id == 0)
             {
-                addedPerson.Id = people.Count == 0 ? 1 : people.Last().Id + 1;
+                addedPerson.Id = people.Count == 0 ? 1 : people.Max(x=>x.Id) + 1;
                 wasnull = true;
             }
             else
@@ -108,7 +108,7 @@ namespace DataLayerLogic.Managers
         #region Delete IPerson
         public static bool CommonDeleteIPerson<T>(T person, ICollection<T> people) where T : IPerson
         {
-            if(EqualityComparer<T>.Default.Equals(person,default(T)) ||!(person.DateOfBirth<DateTime.MaxValue && person.DateOfBirth > DateTime.MinValue))
+            if (EqualityComparer<T>.Default.Equals(person, default(T)) || !(person.DateOfBirth < DateTime.MaxValue && person.DateOfBirth > DateTime.MinValue))
             {
                 throw new ArgumentNullException("Empty Person model is not accepted.");
             }
@@ -126,7 +126,7 @@ namespace DataLayerLogic.Managers
         /// <param name="dateOfBirth">(Optional)Searched date</param>
         /// <param name="email">(Optional)Searched email / framgment of an email</param>
         /// <returns>Returns an ICollection<IPerson> whith the records what passed the filter</returns>
-        public static ICollection<T> CommonSearch<T>(ICollection<T> people, string name= null,DateTime? dateOfBirth=null,string email=null) where T: IPerson
+        public static ICollection<T> CommonSearch<T>(ICollection<T> people, string name = null, DateTime? dateOfBirth = null, string email = null) where T : IPerson
         {
             if (people.Count() == 0)
             {
@@ -136,21 +136,21 @@ namespace DataLayerLogic.Managers
             bool isValidName = !string.IsNullOrWhiteSpace(name);
             bool isValidDate = dateOfBirth > DateTime.MinValue && dateOfBirth < DateTime.MaxValue;
             bool isValidEmail = !string.IsNullOrWhiteSpace(email);
-            if(!isValidName && !isValidDate && !isValidEmail)
+            if (!isValidName && !isValidDate && !isValidEmail)
             {
                 return people;
             }
             if (isValidName)
             {
-                people = people.Where(x => x.Name.ToLower().Contains(name.ToLower())).ToList();
+                people = people.Where(x => x.Name.ToLower().Contains(name.ToLower())).ToCollection();
             }
             if (isValidDate)
             {
-                people = people.Where(x => x.DateOfBirth.Year == dateOfBirth.Value.Year).ToList();
+                people = people.Where(x => x.DateOfBirth.Year == dateOfBirth.Value.Year).ToCollection();
             }
-            if(isValidEmail)
+            if (isValidEmail)
             {
-                people = people.Where(x => x.Email.ToLower().Contains(email.ToLower())).ToList();
+                people = people.Where(x => x.Email.ToLower().Contains(email.ToLower())).ToCollection();
             }
             return people;
         }

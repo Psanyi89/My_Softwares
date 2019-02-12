@@ -3,7 +3,7 @@ using PersonEntities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using static DataLayerLogic.Managers.CommonPersonManager;
 namespace DataLayerLogic.Managers
 {
     internal class PersonManagerFakeDB : IPersonManager
@@ -18,7 +18,7 @@ namespace DataLayerLogic.Managers
         {
             #region  Create FakeDB in Memory using NBuilder and Faker.Net
 
-            ICollection<Person> people = CommonPersonManager.GenerateIPersonCollection<Person>(100);
+            ICollection<Person> people = GenerateIPersonCollection<Person>(100);
             #endregion
 
             foreach (Person item in people)
@@ -38,7 +38,8 @@ namespace DataLayerLogic.Managers
         public Person AddPerson(Person person)
         {
             bool wasnull = false;
-            return CommonPersonManager.CommonAddPerson(person, _personFakeDB, ref wasnull);
+           return CommonAddPerson(person, _personFakeDB, ref wasnull);
+            
         }
 
         #endregion
@@ -64,7 +65,7 @@ namespace DataLayerLogic.Managers
         /// <returns>Returns the updated person</returns>
         public Person UpdatePerson(Person person)
         {
-            return CommonPersonManager.CommonUpdatePerson(person, _personFakeDB);
+            return CommonUpdatePerson(person, _personFakeDB);
         }
         #endregion
 
@@ -77,7 +78,7 @@ namespace DataLayerLogic.Managers
         /// <returns>Returns that the process was successful or not</returns>
         public bool DeletePerson(Person p)
         {
-            return CommonPersonManager.CommonDeleteIPerson(p, _personFakeDB);
+            return CommonDeleteIPerson(p, _personFakeDB);
         }
 
         #endregion
@@ -93,7 +94,7 @@ namespace DataLayerLogic.Managers
         public List<Person> SearchResult(string name = null, DateTime? dateOfBirth = null, string email = null)
         {
             List<Person> result = GetPersons();
-            return CommonPersonManager.CommonSearch(result, name, dateOfBirth, email).ToList();
+            return CommonSearch(result, name, dateOfBirth, email).ToList();
         }
         #endregion
 

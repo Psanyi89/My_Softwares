@@ -7,7 +7,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
-
+using System.Runtime.Serialization.Formatters.Binary;
 namespace DataLayerLogic
 {
     public static class CreateFileTypes
@@ -152,6 +152,24 @@ namespace DataLayerLogic
             Toml.WriteFile(table, $"{filePath}{Toml.FileExtension}");
         }
 
+        #endregion
+
+        #region Create and Write Binary file
+        /// <summary>
+        /// Serializies the object and write it to a binary file
+        /// </summary>
+        /// <typeparam name="T">Type of the object</typeparam>
+        /// <param name="objectToWrite">the object what will be serialized and written to the binary file</param>
+        /// <param name="filePath">file path, name and extension</param>
+        /// <param name="append">Create a new file or add content to an extisting one</param>
+        public static void CreateBinarty<T>(this T objectToWrite, string filePath, bool append = false)
+        {
+            using (Stream stream= File.Open(filePath,append? FileMode.Append :FileMode.Create))
+            {
+                BinaryFormatter binaryformatter = new BinaryFormatter();
+                binaryformatter.Serialize(stream, objectToWrite);
+            }
+        }
         #endregion
 
         #region Create and populate MongoDB

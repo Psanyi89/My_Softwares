@@ -1,13 +1,14 @@
 ﻿using PersonEntities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace DataLayerLogic.Managers
 {
     internal class PersonManagerCSV : IPersonManager
     {
-        private readonly string filePath = "FakeDB.csv";
+        private readonly string filePath = Path.Combine("Resources", "FakeDB.csv");
         private readonly List<Person> CSVDataBase = new List<Person>();
 
         #region Constructor

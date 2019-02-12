@@ -9,7 +9,7 @@ namespace DataLayerLogic.Managers
     internal class TxtPersonManager : IPersonManager
     {
         private readonly List<Person> TxtDBdatabase = new List<Person>();
-        private readonly string filePath = "FakeDB.txt";
+        private readonly string filePath =Path.Combine("Resources","FakeDB.txt");
 
         #region Constructor
         /// <summary>

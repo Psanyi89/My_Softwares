@@ -2,6 +2,7 @@
 using PersonEntities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace DataLayerLogic.Managers
     internal class PersonManagerToml: IPersonManager
     {
         private readonly List<Person> TomlDataBase = new List<Person>();
-        private readonly string filePath = "FakeDB";
+        private readonly string filePath = Path.Combine("Resources", "FakeDB");
       
         #region TomlDataBase Constructor
         /// <summary>

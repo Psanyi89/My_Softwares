@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 namespace Weather_App
 {
@@ -21,7 +22,7 @@ namespace Weather_App
             {
                 ILookup<string, City> valami = countries.ToLookup(x => x.country, x => x);
                 List<string> valami2 = valami[$"{ComboBoxCountry.SelectedValue.ToString()}"].Select(x => x.name).OrderBy(x => x).ToList();
-                comboBoxCity.Text = "";
+                comboBoxCity.Text = string.Empty;
                 comboBoxCity.Items.Clear();
                 comboBoxCity.Items.AddRange(valami2.ToArray());
 
@@ -36,7 +37,10 @@ namespace Weather_App
 
         private void Button1_Click(object sender, EventArgs e)
         {
-
+            if (ComboBoxCountry.SelectedIndex==-1)
+            {
+                return;
+            }
             LocationLabel.Text = $"{comboBoxCity.Text}, {ComboBoxCountry.Text}";
             string[] parameters = {
                                     comboBoxMeasurement.Text,
@@ -92,9 +96,9 @@ namespace Weather_App
                     Stickers.Controls.Clear();
                     string temperature = comboBoxMeasurement.Text == "metric" ? "\u00B0C" : comboBoxMeasurement.Text == "imperial" ? "\u00B0F" : "K";
                     string speed = comboBoxMeasurement.Text == "imperial" ? "mhp" : "m/s";
-                    PrintOut.Text += $"Location: {weatherForecast.city.name}, {weatherForecast.city.country}\n" +
-                        $"Coordinates: Latitude: {weatherForecast.city.coord.lat}\u00B0, Longitude: {weatherForecast.city.coord.lon}\u00B0 \n" +
-                        $"Population: {weatherForecast.city.population}\n";
+                    PrintOut.Text += $"Location: {weatherForecast.City.name}, {weatherForecast.City.country}\n" +
+                        $"Coordinates: Latitude: {weatherForecast.City.coord.lat}\u00B0, Longitude: {weatherForecast.City.coord.lon}\u00B0 \n" +
+                        $"Population: {weatherForecast.City.population}\n";
                     for (int i = 0; i < weatherForecast.list.Count; i++)
                     {
                         GroupBox groupBox = methods.AddGroupBox(i, weatherForecast, temperature, speed);
@@ -130,10 +134,12 @@ namespace Weather_App
             }
         }
 
-        private void WeatherApp_Load(object sender, EventArgs e)
+        private async void WeatherApp_Load(object sender, EventArgs e)
         {
             try
             {
+                button1.Enabled = false;
+                ComboBoxCountry.Enabled = false;
                 comboBoxLimit.Items.AddRange(options.limit);
                 comboBoxLimit.SelectedIndex = 0;
                 comboBoxMeasurement.Items.AddRange(options.measurement);
@@ -146,11 +152,14 @@ namespace Weather_App
                 ComboBoxOptions.DisplayMember = "Key";
                 ComboBoxOptions.ValueMember = "Value";
                 ComboBoxOptions.SelectedIndex = 0;
-                countries = methods.LoadJson();
+                countries = await methods.LoadJson();
                 ComboBoxCountry.DataSource = new BindingSource(options.CountriesDic, null);
                 ComboBoxCountry.DisplayMember = "Key";
                 ComboBoxCountry.ValueMember = "Value";
                 ComboBoxCountry.Text = "Select a country";
+                ComboBoxCountry.Enabled = true;
+                button1.Enabled = true;
+
             }
             catch (Exception x)
             {

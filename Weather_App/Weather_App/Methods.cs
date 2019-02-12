@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Weather_App
@@ -66,11 +67,11 @@ namespace Weather_App
         public dynamic GetForeCast(string[] parameters)
         {
 
-            using (WebClient web = new WebClient())
+            using (HttpClient web = new HttpClient())
             {
                 parameters[2] = string.IsNullOrEmpty(parameters[2]) || parameters[2] == "XK" ? "" : $",{parameters[2]}";
                 string url = string.Format($"https://api.openweathermap.org/data/2.5/{parameters[1]}?q={parameters[3]}{parameters[2]}&appid={AppId}&units={parameters[0]}&lang={parameters[4]}&cnt={parameters[5]}");
-                string json = web.DownloadString(url);
+                string json = web.GetStringAsync(url).Result;
                 json = Encoding.UTF8.GetString(Encoding.Default.GetBytes(json));
                 if (parameters[1] == "forecast")
                 {
@@ -87,13 +88,15 @@ namespace Weather_App
         }
         #endregion
         #region Load Data From Json
-        public List<City> LoadJson()
+        public async Task<List<City>> LoadJson()
         {
-
-            using (StreamReader r = new StreamReader(Application.StartupPath + @"/Resources/city.list.min.json"))
+            using (Stream s = new FileStream(Path.Combine("Resources", "city.list.min.json"), FileMode.Open, FileAccess.Read))
+            using (StreamReader r = new StreamReader(s))
+            using (JsonReader reader = new JsonTextReader(r))
             {
-                string json = r.ReadToEnd();
-                return JsonConvert.DeserializeObject<List<City>>(json).OrderBy(x => x.country).ToList();
+                JsonSerializer serializer = new JsonSerializer();
+
+                return await Task.Run(() => serializer.Deserialize<List<City>>(reader).OrderBy(x => x.country).ToList());
             }
 
         }
@@ -206,26 +209,22 @@ namespace Weather_App
             foreach (Control c in control.Controls)
             {
 
-                TextBox texbox = c as TextBox;
-                ComboBox comboBox = c as ComboBox;
-                DateTimePicker dateTimePicker = c as DateTimePicker;
-                RichTextBox richTextBox = c as RichTextBox;
-                if (texbox != null)
+                if (c is TextBox texbox)
                 {
                     texbox.Clear();
                 }
 
-                if (comboBox != null && !string.IsNullOrEmpty(comboBox.Text))
+                if (c is ComboBox comboBox && !string.IsNullOrEmpty(comboBox.Text))
                 {
                     comboBox.SelectedIndex = 0;
                 }
 
-                if (dateTimePicker != null)
+                if (c is DateTimePicker dateTimePicker)
                 {
                     dateTimePicker.Format = DateTimePickerFormat.Short;
                     dateTimePicker.CustomFormat = " ";
                 }
-                if (richTextBox != null)
+                if (c is RichTextBox richTextBox)
                 {
                     richTextBox.Clear();
                 }

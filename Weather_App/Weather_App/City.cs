@@ -4,8 +4,8 @@ namespace Weather_App
 {
     public class City
     {
-        [JsonProperty("id")]
-        public int id { get; set; }
+        //[JsonProperty("id")]
+        //public int id { get; set; }
         [JsonProperty("name")]
         public string name { get; set; }
         [JsonProperty("country")]

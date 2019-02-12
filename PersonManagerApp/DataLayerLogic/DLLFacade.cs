@@ -75,5 +75,38 @@ namespace DataLayerLogic
             return new PersonManagerJson();
         }
         #endregion
+
+        #region MS Sql LocalDB manager interface
+        /// <summary>
+        /// Call in LocalDB database manager interface
+        /// </summary>
+        /// <returns>CRUD and search methods</returns>
+        public IPersonManager GetPersonManagerLocalDB()
+        {
+            return new PersonManagerLocalDB();
+        }
+        #endregion
+
+        #region SqLite database manager interface
+        /// <summary>
+        /// Call in SqLite database manager interface
+        /// </summary>
+        /// <returns>CRUD and search methods</returns>
+        public IPersonManager GetPersonManagerSqLiteFakeDB()
+        {
+            return new PersonManagerSqLiteFakeDB();
+        }
+        #endregion
+
+        #region Binary database manager interface
+        /// <summary>
+        /// Call in Binary database manager interface
+        /// </summary>
+        /// <returns>CRUD and search methods</returns>
+        public IPersonManager GetPersonManagerBinary()
+        {
+            return new PersonManagerBinary();
+        }
+        #endregion
     }
 }

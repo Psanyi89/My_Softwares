@@ -3,7 +3,7 @@ using PersonEntities;
 using System;
 using System.Windows;
 using System.Windows.Controls;
-
+[assembly: log4net.Config.XmlConfigurator(ConfigFileExtension = ".config", ConfigFile = "App.config", Watch = true)]
 
 namespace PersonManangerWPF
 {
@@ -13,19 +13,20 @@ namespace PersonManangerWPF
     public partial class StartUp : Page
     {
         private IPersonManager pm;
+        private int SelectedPerson;
         public StartUp()
         {
             InitializeComponent();
             pm = new DLLFacade().GetPersonManagerMemory();
             try
             {
-            LstPerson.ItemsSource = pm.GetPersons();
+                LstPerson.ItemsSource = pm.GetPersons();
 
             }
             catch (Exception ex)
             {
 
-                MessageBox.Show($"{ex.Message}\n{ex.StackTrace}","Error!!!444",MessageBoxButton.OK,MessageBoxImage.Error,MessageBoxResult.OK);
+                MessageBox.Show($"{ex.Message}\n{ex.StackTrace}", "Error!!!444", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
             Options.ItemsSource = new DataAccess().AccesPoint;
 
@@ -36,8 +37,9 @@ namespace PersonManangerWPF
             {
                 Upadate.IsEnabled = true;
                 Delete.IsEnabled = true;
+                SelectedPerson = person.Id;
                 TxtName.Text = person.Name;
-                TxtDateOfBirth.Text = person.DateOfBirth.ToShortDateString();
+                TxtDateOfBirth.SelectedDate = person.DateOfBirth;
                 TxtEmail.Text = person.Email;
             }
         }
@@ -46,20 +48,21 @@ namespace PersonManangerWPF
         {
             if (LstPerson.SelectedItem is Person person)
             {
+                person.Id = SelectedPerson;
                 person.Name = TxtName.Text;
-                person.DateOfBirth = Convert.ToDateTime(TxtDateOfBirth.Text);
+                person.DateOfBirth = TxtDateOfBirth.SelectedDate ?? DateTime.MinValue;
                 person.Email = TxtEmail.Text;
                 try
                 {
                     pm.UpdatePerson(person);
                 }
-                catch ( Exception ex)
+                catch (Exception ex)
                 {
 
                     MessageBox.Show($"{ex.Message}\n{ex.StackTrace}", "Error!!!444", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                 }
             }
-                ClearPanel();
+            ClearPanel();
             LstPerson.ItemsSource = pm.GetPersons();
         }
 
@@ -94,7 +97,7 @@ namespace PersonManangerWPF
                 Person Person = new Person
                 {
                     Name = TxtName.Text,
-                    DateOfBirth = Convert.ToDateTime(TxtDateOfBirth.Text),
+                    DateOfBirth = TxtDateOfBirth.SelectedDate ?? DateTime.MinValue,
                     Email = TxtEmail.Text
                 };
 
@@ -150,6 +153,18 @@ namespace PersonManangerWPF
             {
                 pm = new DLLFacade().GetPersonManagerJson();
             }
+            else if (Options.SelectedIndex == 6)
+            {
+                pm = new DLLFacade().GetPersonManagerLocalDB();
+            }
+            else if (Options.SelectedIndex == 7)
+            {
+                pm = new DLLFacade().GetPersonManagerSqLiteFakeDB();
+            }
+            else if (Options.SelectedIndex == 8)
+            {
+                pm = new DLLFacade().GetPersonManagerBinary();
+            }
             LstPerson.ItemsSource = pm.GetPersons();
         }
         private void ClearPanel()
@@ -178,7 +193,7 @@ namespace PersonManangerWPF
             try
             {
 
-            LstPerson.ItemsSource = pm.SearchResult(TxtName.Text,TxtDateOfBirth.SelectedDate,TxtEmail.Text);
+                LstPerson.ItemsSource = pm.SearchResult(TxtName.Text, TxtDateOfBirth.SelectedDate, TxtEmail.Text);
             }
             catch (Exception ex)
             {

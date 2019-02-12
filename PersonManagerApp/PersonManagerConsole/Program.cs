@@ -2,16 +2,34 @@
 using PersonEntities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+[assembly: log4net.Config.XmlConfigurator(ConfigFileExtension = ".config", ConfigFile ="App.config", Watch = true)]
 namespace PersonManagerConsole
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static readonly log4net.ILog log = LogHelper.GetLogger();
+
+        private static void Main(string[] args)
         {
+            ////while (true)
+            ////{
+            //    log.Debug("Lowest level");
+            //    log.Info("Second level ");
+            //    log.Warn("Third Level");
+            //    var i = 0;
+            //    try
+            //    {
+            //        var x = 10 / i;
+            //    }
+            //    catch (DivideByZeroException ex)
+            //    {
+
+            //        log.Error($"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+            //    }
+            //    log.Fatal("Highest level");
+            ////}
+
             //IPersonManager pm = new DLLFacade().GetPersonManagerMemory();
             //IPersonManager pm = new DLLFacade().GetPersonManagerTxt();
             //IPersonManager pm = new DLLFacade().GetPersonManagerCSV();

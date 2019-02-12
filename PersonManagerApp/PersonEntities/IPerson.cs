@@ -6,7 +6,7 @@ namespace PersonEntities
     {
         DateTime DateOfBirth { get; set; }
         string Email { get; set; }
-        int? Id { get; set; }
+        int Id { get; set; }
         string Name { get; set; }
 
         string ToString();
