@@ -13,7 +13,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
+        <!--<StackPanel Orientation="Horizontal">
             <Button x:Name="AddPerson" Content="Add"/>
             <Button x:Name="RemovePerson" Content="Remove"/>
         </StackPanel>
@@ -26,7 +26,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="Black" BorderThickness="1" Padding="10">
+                    <Border BorderBrush="Black" BorderThickness="1" Padding="10" Margin="5">
                         <StackPanel Orientation="Vertical">
                     <TextBlock Text="{Binding Name}"/>
                         <TextBlock Text="{Binding DateOfBirth}"/>
@@ -36,7 +36,9 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        </ScrollViewer>
-
+        </ScrollViewer>-->
+            <DataGrid x:Name="People" Grid.Row="2">
+                
+            </DataGrid>
     </Grid>
 </Window>

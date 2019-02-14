@@ -23,7 +23,10 @@ namespace PersonManagerWPF_MVVM.ViewModels
 
         public void AddPerson()
         {
-            var person = pm.GetPersons().FirstOrDefault();
+            Random rnd = new Random();
+            var myList = pm.GetPersons();
+            int index = rnd.Next(1,100);
+            var person =myList.Where(x=>x.Id==index ).First();
           var addedPerson=  pm.AddPerson(person);
             People.Add(addedPerson);
 

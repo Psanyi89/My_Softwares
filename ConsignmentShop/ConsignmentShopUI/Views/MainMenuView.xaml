@@ -1,0 +1,29 @@
+﻿<Window x:Class="ConsignmentShopUI.Views.MainMenuView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ConsignmentShopUI.Views"
+        mc:Ignorable="d"
+        Title="MainMenuView" Height="450" Width="800">
+    <DockPanel Margin="5" >
+        <ToolBarTray Orientation="Horizontal" DockPanel.Dock="Top">
+            <ToolBar>
+                <Button x:Name="OpenShop" Content="Shop" FontSize="18" 
+                        FontWeight="Bold" ToolTip="Opens shopping menu"
+                        Margin="10"/>
+                <Button x:Name="AddVendor" Content="Vendors" FontSize="18" 
+                        FontWeight="Bold" ToolTip="Opens Vendor menu"
+                         Margin="10"/>
+                <Button x:Name="AddItem" Content="Items" FontSize="18" 
+                        FontWeight="Bold" ToolTip="Opens Item menu"
+                         Margin="10"/>
+                <Button x:Name="AddStore" Content="Stores" FontSize="18" 
+                        FontWeight="Bold" ToolTip="Opens shopping menu"
+                         Margin="10"/>
+                
+            </ToolBar>
+        </ToolBarTray>
+        <ContentControl x:Name="ActiveItem" DockPanel.Dock="Top"/>
+    </DockPanel>
+</Window>
