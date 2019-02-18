@@ -14,6 +14,6 @@ namespace ConsignmentShopLibrary
         decimal Price { get; set; }
         bool Sold { get; set; }
         bool PaymentDistributed { get; set; }
-        int OwnerId { get; set; }
+        int Owner { get; set; }
     }
 }

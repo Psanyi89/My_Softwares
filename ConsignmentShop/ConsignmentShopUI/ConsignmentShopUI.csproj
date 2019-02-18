@@ -14,6 +14,8 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -45,6 +47,7 @@
       <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -150,6 +153,10 @@
     <ProjectReference Include="..\ConsignmentShopLibrary\ConsignmentShopModelsLibrary.csproj">
       <Project>{1F915375-8097-4424-81BB-A0F6EC1CCCE5}</Project>
       <Name>ConsignmentShopModelsLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ConsignmentShopLogicLibrary\ConsignmentShopLogicLibrary.csproj">
+      <Project>{2B58BAF2-44B8-4259-A4B5-EB114875C7B3}</Project>
+      <Name>ConsignmentShopLogicLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

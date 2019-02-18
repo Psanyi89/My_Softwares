@@ -7,6 +7,51 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <!--Column 0 DataGrid-->
+        
+        <DataGrid Grid.Column="0" ItemsSource="{Binding Items}" 
+             IsReadOnly="True" CanUserAddRows="False"
+                  CanUserDeleteRows="False"  AlternatingRowBackground="Blue" 
+                  AutoGenerateColumns="False" 
+                  SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Title" FontSize="18"
+                                    FontWeight="Bold"
+                                    Binding="{Binding Path=Title}" />
+                <DataGridTextColumn Header="Description"  FontSize="18"
+                                    FontWeight="Bold"
+                                    Binding="{Binding Path=Description}"/>
+                <DataGridTextColumn Header="Price"  FontSize="18"
+                                    FontWeight="Bold"
+                                    Binding="{Binding Path=Price, StringFormat='\0\$'}"/>
+                <DataGridCheckBoxColumn Header="Sold"  
+                                    Binding="{Binding Path=Sold}"/>
+                <DataGridCheckBoxColumn Header="Payment Distributed" 
+                                    Binding="{Binding Path=PaymentDistributed}"/>
+                <DataGridTextColumn Header="Owner" FontSize="18" FontWeight="Bold" 
+                                  Binding="{Binding Path=OwnerId}"  />
+            </DataGrid.Columns>
+        </DataGrid>
+   
+        <!--Column 1 Gridsplitter-->
+
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="5"/>
+        
+        <!--Column 2 Item Form-->
+
+        <WrapPanel Orientation="Vertical" Grid.Column="2">
+            <WrapPanel Orientation="Horizontal">
+                <TextBlock Text="Title: " FontSize="18" FontWeight="Bold"/>
+                
+            </WrapPanel>
+        </WrapPanel>
+        
     </Grid>
+    
 </UserControl>

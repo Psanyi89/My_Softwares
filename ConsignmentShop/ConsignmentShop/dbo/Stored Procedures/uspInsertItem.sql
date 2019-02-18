@@ -4,11 +4,11 @@
 	@Price money ,
 	@Sold bit = false,
 	@PaymentDistributed bit = false,
-	@Owner nvarchar(max)
+	@OwnerId int
 	as
 	begin
 	declare @VendorId int
-	Select @VendorId=VendorId from Vendors where @Owner= CONCAT(FirstName,' ',LastName);
+	Select @VendorId=VendorId from Vendors where @OwnerId=VendorId;
 	if(@VendorId>0)
 	begin
 	insert into Items 

@@ -10,6 +10,7 @@ namespace ConsignmentShopUI.Models
         public decimal Price { get; set; }
         public bool Sold { get; set; }
         public bool PaymentDistributed { get; set; }
-        public int OwnerId { get; set; }
+        public int Owner { get; set; }
+
     }
 }

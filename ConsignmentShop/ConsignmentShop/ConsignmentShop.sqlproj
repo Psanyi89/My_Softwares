@@ -143,8 +143,20 @@
       <QuotedIdentifier>On</QuotedIdentifier>
     </Build>
     <Build Include="dbo\Stored Procedures\uspInsertVendor.sql" />
-    <Build Include="dbo\Stored Procedures\uspInsertItem.sql" />
+    <Build Include="dbo\Stored Procedures\uspInsertItem.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="dbo\Stored Procedures\uspInsertToStore.sql" />
+    <Build Include="dbo\Stored Procedures\uspSelectAllVendor.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
+    <Build Include="dbo\Stored Procedures\uspDeleteVendor.sql" />
+    <Build Include="dbo\Stored Procedures\uspUpdateVendor.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetItems.sql" />
+    <Build Include="dbo\Stored Procedures\uspUpdateItem.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteItem.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PublishLocations\ConsignmentShop.publish.xml" />
