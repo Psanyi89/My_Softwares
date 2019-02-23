@@ -11,7 +11,7 @@ namespace ConsignmentShopUI.ViewModels
 
     public class AddVendorsViewModel : Conductor<object>, IDataErrorInfo
     {
-        private int _comission;
+        private int? _comission;
         private string _firstName;
         private string _lastName;
         private BindableCollection<Vendor> _vendors;
@@ -51,9 +51,9 @@ namespace ConsignmentShopUI.ViewModels
                 NotifyOfPropertyChange(() => SelectedVendor.LastName);
             }
         }
-
+        [Required(ErrorMessage ="Comission rate is required")]
         [Range(1, 100, ErrorMessage = "{0} should be between 1 and 100")]
-        public int Comission
+        public int? Comission
         {
             get => _comission;
             set
@@ -236,7 +236,7 @@ namespace ConsignmentShopUI.ViewModels
         {
             FirstName = string.Empty;
             LastName = string.Empty;
-            Comission = 1;
+            Comission = null;
             SelectedVendor = null;
         }
         #endregion

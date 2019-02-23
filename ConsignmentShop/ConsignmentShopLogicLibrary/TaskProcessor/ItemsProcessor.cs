@@ -1,24 +1,20 @@
 ﻿using ConsignmentShopLibrary;
-using static ConsignmentShopLogicLibrary.DataAccess.DataAccess;
 using Dapper;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static ConsignmentShopLogicLibrary.DataAccess.DataAccess;
 
 namespace ConsignmentShopLogicLibrary.TaskProcessor
 {
     public class ItemsProcessor
     {
-      
+
         #region Default ConnectionString name
         /// <summary>
         /// default connectionstring name
         /// </summary>
-       private const string connName = "LocalDB";
+        private const string connName = "LocalDB";
         #endregion
-    
+
         #region Lists or searchIItems
 
         /// <summary>
@@ -43,11 +39,11 @@ namespace ConsignmentShopLogicLibrary.TaskProcessor
         /// <param name="item">IItem object</param>
         /// <param name="connectionString">name of connectionstring in AppConfig</param>
         /// <returns>returns the number of rows were affected</returns>
-        public static int InsertItem<T>(T item, string connectionString=connName)where T:IItem
+        public static int InsertItem<T>(T item, string connectionString = connName) where T : IItem
         {
             DynamicParameters param = CreateParam(item);
             return CmdExecute("uspInsertItem", param, connectionString);
-            
+
         }
         #endregion
 
@@ -59,7 +55,7 @@ namespace ConsignmentShopLogicLibrary.TaskProcessor
         /// <param name="item">IItem object</param>
         /// <param name="connectionString">name of the connectionstring in AppConfig</param>
         /// <returns>returns number of rows were affected</returns>
-        public int UpdateItem<T>(T item,string connectionString=connName)where T : IItem
+        public static int UpdateItem<T>(T item, string connectionString = connName) where T : IItem
         {
             DynamicParameters param = CreateParam(item);
             return CmdExecute("uspUpdateItem", param, connectionString);
@@ -74,14 +70,14 @@ namespace ConsignmentShopLogicLibrary.TaskProcessor
         /// <param name="item">IItem object</param>
         /// <param name="connectionString">name of connectionstring in AppConfig</param>
         /// <returns>returns number of rows were affected</returns>
-        public int DeleteItem<T>(T item,string connectionString=connName)where T : IItem
+        public static int DeleteItem<T>(T item, string connectionString = connName) where T : IItem
         {
             DynamicParameters param = new DynamicParameters();
             param.Add("@ItemId", item.ItemId);
             return CmdExecute("uspDeleteItem", param, connectionString);
         }
         #endregion
-  
+
         #region Generates DynamicParameters for IItem
         /// <summary>
         /// Generates DynamicParameters for IItem
@@ -92,13 +88,18 @@ namespace ConsignmentShopLogicLibrary.TaskProcessor
         private static DynamicParameters CreateParam<T>(T item) where T : IItem
         {
             DynamicParameters param = new DynamicParameters();
+            if (item?.ItemId != null && (item?.ItemId != 0))
+            {
+                param.Add("@ItemId", item.ItemId);
+            }
+
             if (!string.IsNullOrWhiteSpace(item?.Title))
             {
                 param.Add("@Title", item.Title);
             }
             if (!string.IsNullOrWhiteSpace(item?.Description))
             {
-                param.Add("@Desription", item.Description);
+                param.Add("@Description", item.Description);
             }
             if (item?.Price != null && (item?.Price > 0))
             {

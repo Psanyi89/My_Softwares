@@ -11,6 +11,6 @@ namespace ConsignmentShopLibrary
         int VendorId { get; set; }
         string FirstName { get; set; }
         string LastName { get; set; }
-        int Comission { get; set; }
+        int? Comission { get; set; }
     }
 }

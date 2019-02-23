@@ -9,7 +9,7 @@
                     <!--Load Caliburn.Micro Bootstrapper-->
                     <local:Bootstrapper x:Key="Bootstrapper"/>
                    <!--Begin TextBox Data Validation-->
-                    <Style TargetType="TextBox">
+                    <Style x:Key="DataValidate" TargetType="Control">
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>
                                 <ControlTemplate>
@@ -36,6 +36,8 @@
                             </Trigger>
                         </Style.Triggers>
                     </Style>
+                    <Style BasedOn="{StaticResource DataValidate}" TargetType="ComboBox"/>
+                    <Style BasedOn="{StaticResource DataValidate}" TargetType="TextBox"/>
                     <!--End of TextBox Data Validation-->
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

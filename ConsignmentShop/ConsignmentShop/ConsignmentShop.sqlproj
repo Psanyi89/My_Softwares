@@ -147,7 +147,10 @@
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
     </Build>
-    <Build Include="dbo\Stored Procedures\uspInsertToStore.sql" />
+    <Build Include="dbo\Stored Procedures\uspInsertToStore.sql">
+      <AnsiNulls>Off</AnsiNulls>
+      <QuotedIdentifier>Off</QuotedIdentifier>
+    </Build>
     <Build Include="dbo\Stored Procedures\uspSelectAllVendor.sql">
       <AnsiNulls>Off</AnsiNulls>
       <QuotedIdentifier>Off</QuotedIdentifier>
@@ -157,6 +160,11 @@
     <Build Include="dbo\Stored Procedures\uspGetItems.sql" />
     <Build Include="dbo\Stored Procedures\uspUpdateItem.sql" />
     <Build Include="dbo\Stored Procedures\uspDeleteItem.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetStores.sql" />
+    <Build Include="dbo\Stored Procedures\uspUpdateStore.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteStore.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteItemFromStore.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetItemsInStore.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PublishLocations\ConsignmentShop.publish.xml" />

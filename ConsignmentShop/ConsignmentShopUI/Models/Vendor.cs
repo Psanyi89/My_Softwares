@@ -7,7 +7,7 @@ namespace ConsignmentShopUI.Models
         public int VendorId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int Comission { get; set; }
+        public int? Comission { get; set; }
 
         public string FullName
         {
