@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System;
 
 namespace ConsignmentShopUI.ViewModels
 {
@@ -179,8 +180,21 @@ namespace ConsignmentShopUI.ViewModels
             {
                 return;
             }
-            Vendors.Remove(deletedVendor);
-            DeletingVendor(deletedVendor);
+            try
+            {
+                DeletingVendor(deletedVendor);
+                Vendors.Remove(deletedVendor);
+            }
+            catch (AggregateException)
+            {
+                var dialogViewModel = IoC.Get<DialogViewModel>();
+               dialogViewModel.Title = "Error";
+                dialogViewModel.Message = "Vendor cannot be deleted because it has items";
+
+                IWindowManager manager = new WindowManager();
+                manager.ShowDialog(dialogViewModel);
+
+            }
             Reset();
         }
         #endregion

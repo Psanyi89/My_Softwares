@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[uspInsertToStore]
 	@StoreName nvarchar(max),
-	@ItemId int
+	@ItemId int=null
 AS
 begin
 declare @StoreId int
@@ -11,6 +11,8 @@ begin
 insert into Stores (Name) values (@StoreName)
 select @StoreId= @@IDENTITY
 end
-
+if(@ItemId is not null)
+begin
 insert into ItemsInStore (StoreId,ItemId) values (@StoreId,@ItemId)
+end
 end

@@ -9,6 +9,10 @@ namespace ConsignmentShopUI.ViewModels
 {
    public class MainMenuViewModel :Conductor<object>.Collection.OneActive
     {
+        public MainMenuViewModel()
+        {
+            ActivateItem(new ShopViewModel());
+        }
         public void AddItem()
         {
             ActivateItem(new AddNewItemViewModel());

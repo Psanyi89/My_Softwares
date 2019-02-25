@@ -239,8 +239,20 @@ namespace ConsignmentShopUI.ViewModels
                 return;
             }
             Item deletedItem = Items.Where(x => x.ItemId == SelectedItem.ItemId).FirstOrDefault();
-            ItemsProcessor.DeleteItem(deletedItem);
-            Items.Remove(deletedItem);
+            try
+            {
+                ItemsProcessor.DeleteItem(deletedItem);
+                Items.Remove(deletedItem);
+            }
+            catch (AggregateException)
+            {
+                var dialogViewModel = IoC.Get<DialogViewModel>();
+                dialogViewModel.Title = "Error";
+                dialogViewModel.Message = "Item cannot be deleted because it's added to a store";
+
+                IWindowManager manager = new WindowManager();
+                manager.ShowDialog(dialogViewModel);
+            }
             Items.Refresh();
             Reset();
         }

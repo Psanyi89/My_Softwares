@@ -25,6 +25,18 @@
                 </MultiDataTrigger>
             </Style.Triggers>
         </Style>
+        <Style TargetType="{x:Type Button}" x:Key="StoreAction">
+            <Setter Property="IsEnabled" Value="false" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding ElementName=TextBoxStoreName,
+                            Path=(Validation.HasError)}" Value="false" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="IsEnabled" Value="true" />
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -55,12 +67,29 @@
                     NotifyOnValidationError=True, ValidatesOnDataErrors=True}" FontSize="18"
                          FontWeight="Bold" Margin="10,10,0,0" MinWidth="150"
                           VerticalAlignment="Center"/>
+                <WrapPanel Orientation="Vertical" Margin="10">
+                    <WrapPanel Orientation="Horizontal">
+                        <Button x:Name="AddStore" Content="Add Store" Margin="5"
+                            FontWeight="Bold" FontSize="18" 
+                        Style="{StaticResource StoreAction}"/>
+                        <Button x:Name="UpdateItem" Content="Update" Margin="5"
+                            FontWeight="Bold" FontSize="18" 
+                        Style="{StaticResource StoreAction}"/>
+                    </WrapPanel>
+                    <WrapPanel Orientation="Horizontal">
+                        <Button x:Name="DeleteStore" Content="Delete Store" Margin="5"
+                            FontWeight="Bold" FontSize="18" 
+                        Style="{StaticResource StoreAction}"/>
+                        <Button x:Name="SearchStore" Content="Search Store" Margin="5"
+                            FontWeight="Bold" FontSize="18"/>
+                    </WrapPanel>
+                </WrapPanel>
             </WrapPanel>
             <WrapPanel Orientation="Vertical" Margin="10" >
                 <WrapPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="Title: " FontSize="18" FontWeight="Bold" 
                            VerticalAlignment="Bottom"/>
-                    <TextBox  Name="TextBoxTitle" Text="{Binding Title, Mode=OneWay,
+                    <TextBox  Name="TextBoxTitle" Text="{Binding Title, Mode=TwoWay,
                     UpdateSourceTrigger=PropertyChanged,
                     NotifyOnValidationError=True, ValidatesOnDataErrors=True }" FontSize="18"
                          FontWeight="Bold" Margin="10,10,0,0" MinWidth="150"
@@ -69,7 +98,7 @@
                 <WrapPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="Description: " FontSize="18" FontWeight="Bold" 
                            VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding Description, Mode=OneWay, 
+                    <TextBox Text="{Binding Description, Mode=TwoWay, 
                     UpdateSourceTrigger=PropertyChanged}"
                          FontSize="18" FontWeight="Bold"  Margin="10,10,0,0" Width="300" 
                          MinHeight="150" TextWrapping="Wrap" />
@@ -77,7 +106,7 @@
                 <WrapPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="Price: " FontSize="18" FontWeight="Bold" 
                            VerticalAlignment="Center"/>
-                    <TextBox Name="TextBoxPrice" Text="{Binding Price, Mode=OneWay, 
+                    <TextBox Name="TextBoxPrice" Text="{Binding Price, Mode=TwoWay, 
                     UpdateSourceTrigger=PropertyChanged,
                     NotifyOnValidationError=True, ValidatesOnDataErrors=True}"
                          FontSize="18" FontWeight="Bold"  Margin="10,10,0,0" MinWidth="25" 
@@ -88,7 +117,7 @@
                 <WrapPanel Orientation="Horizontal" Margin="10" >
                     <TextBlock Text="Sold: " FontSize="18" FontWeight="Bold" 
                            VerticalAlignment="Center"/>
-                    <CheckBox IsChecked="{Binding Sold, Mode=OneWay, 
+                    <CheckBox IsChecked="{Binding Sold, Mode=TwoWay, 
                     UpdateSourceTrigger=PropertyChanged}" IsHitTestVisible="False"
                          FontSize="18" FontWeight="Bold"  Margin="10,10,0,0" MinWidth="20" 
                          Height="20" />
@@ -96,7 +125,7 @@
                 <WrapPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="Payment Distributed: " FontSize="18" FontWeight="Bold" 
                            VerticalAlignment="Center"/>
-                    <CheckBox IsChecked="{Binding PaymentDistributed, Mode=OneWay, 
+                    <CheckBox IsChecked="{Binding PaymentDistributed, Mode=TwoWay, 
                     UpdateSourceTrigger=PropertyChanged}"
                          FontSize="18" FontWeight="Bold"  Margin="10,10,0,0" MinWidth="20" 
                          Height="20" />
@@ -105,7 +134,7 @@
                     <TextBlock Text="Owner: " FontSize="18" FontWeight="Bold" 
                            VerticalAlignment="Bottom"/>
                     <ComboBox Name="ComboBoxOwner" ItemsSource="{Binding Path=Vendors}"
-                          SelectedItem="{Binding Path=SelectedVendor, Mode=OneWay, 
+                          SelectedItem="{Binding Path=SelectedVendor, Mode=TwoWay, 
                     UpdateSourceTrigger=PropertyChanged,
                     NotifyOnValidationError=True, ValidatesOnDataErrors=True}"
                           DisplayMemberPath="FullName"
@@ -114,26 +143,18 @@
                           FontSize="18" FontWeight="Bold" />
                 </WrapPanel>
             </WrapPanel>
-
             <WrapPanel Orientation="Horizontal" Margin="10">
-                    <Button x:Name="AddItem" Content="Add" Margin="5" 
+                <Button x:Name="AddItem" Content="Add Item" Margin="5" 
                             FontWeight="Bold" FontSize="18" 
                         Style="{StaticResource ActionBtn}"/>
-                    <Button x:Name="UpdateItem" Content="Update" Margin="5"
-                            FontWeight="Bold" FontSize="18" 
-                        Style="{StaticResource ActionBtn}"/>
-                    <Button x:Name="DeleteItem" Content="Delete Item" Margin="5"
-                            FontWeight="Bold" FontSize="18" 
-                        Style="{StaticResource ActionBtn}"/>
-                <Button x:Name="DeleteStore" Content="Delete Store" Margin="5"
+                <Button x:Name="DeleteItem" Content="Delete Item" Margin="5"
                             FontWeight="Bold" FontSize="18" 
                         Style="{StaticResource ActionBtn}"/>
                 <Button x:Name="SearchItem" Content="Search" Margin="5"
                             FontWeight="Bold" FontSize="18"/>
-                    <Button x:Name="Reset" Content="Reset" Margin="5"
+                <Button x:Name="Reset" Content="Reset" Margin="5"
                             FontWeight="Bold" FontSize="18"/>
-                </WrapPanel>
-           
+            </WrapPanel>
             <WrapPanel>
                 <DataGrid Grid.Column="0" ItemsSource="{Binding StoreItems}" 
              IsReadOnly="True" CanUserAddRows="False"

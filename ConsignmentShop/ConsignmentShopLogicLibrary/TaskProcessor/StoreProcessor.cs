@@ -38,7 +38,7 @@ namespace ConsignmentShopLogicLibrary.TaskProcessor
         /// <param name="item">IStore object</param>
         /// <param name="connectionString">name of connectionstring in AppConfig</param>
         /// <returns>returns the number of rows were affected</returns>
-        public static int InsertStore(string storeName, int itemId, string connectionString = connName)
+        public static int InsertStore(string storeName, int? itemId=null, string connectionString = connName)
         {
             DynamicParameters param = new DynamicParameters();
             param.Add("@StoreName", storeName);

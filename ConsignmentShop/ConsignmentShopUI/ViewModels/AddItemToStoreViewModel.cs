@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿
+using Caliburn.Micro;
 using ConsignmentShopLogicLibrary.TaskProcessor;
 using ConsignmentShopUI.Models;
 using System;
@@ -7,6 +8,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Windows;
+
 
 namespace ConsignmentShopUI.ViewModels
 {
@@ -66,7 +68,6 @@ namespace ConsignmentShopUI.ViewModels
             }
         }
 
-
         public Item SelectedStoreItem
         {
             get => _selectedStoreItem;
@@ -86,7 +87,6 @@ namespace ConsignmentShopUI.ViewModels
                 NotifyOfPropertyChange(() => SelectedStoreItem);
             }
         }
-
 
         [Required(ErrorMessage = "An Owner must be selected!")]
         public Vendor SelectedVendor
@@ -115,19 +115,7 @@ namespace ConsignmentShopUI.ViewModels
 
                 if (SelectedStore != null)
                 {
-                    List<ItemsInStore> inStores = StoreProcessor.GetItemsInStores<ItemsInStore>(SelectedStore.StoreId).ToList();
-                    StoreItems = new BindableCollection<Item>(from x in inStores
-                                                              join y in Items on x.ItemId equals y.ItemId
-                                                              select new Item
-                                                              {
-                                                                  Title = y.Title,
-                                                                  Description = y.Description,
-                                                                  ItemId = y.ItemId,
-                                                                  Owner = y.Owner,
-                                                                  PaymentDistributed = y.PaymentDistributed,
-                                                                  Sold = y.Sold,
-                                                                  Price = y.Price
-                                                              });
+                    StoreItems = LoadStoreItems(SelectedStore.StoreId);
                     Name = value.Name;
                 }
                 NotifyOfPropertyChange(() => SelectedStore);
@@ -153,8 +141,12 @@ namespace ConsignmentShopUI.ViewModels
             set
             {
                 _name = value;
+                if (value != null && SelectedStore != null)
+                {
+                    SelectedStore.Name = value;
+                }
                 NotifyOfPropertyChange(() => Name);
-                NotifyOfPropertyChange(() => SelectedStore.Name);
+
             }
         }
 
@@ -256,24 +248,80 @@ namespace ConsignmentShopUI.ViewModels
             {
                 try
                 {
-
-                    StoreItems.Add(SelectedItem);
-
                     StoreProcessor.InsertStore(Name, SelectedItem.ItemId);
+
+                    Stores = new BindableCollection<Store>(StoreProcessor.GetStores<Store>());
+                    Store item = Stores.Where(x => x.Name == Name).FirstOrDefault();
+                    StoreItems = LoadStoreItems(item.StoreId);
                 }
                 catch (AggregateException)
                 {
 
-                    MessageBox.Show("Item already added to store", "Store Processor", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    var dialogViewModel = IoC.Get<DialogViewModel>();
+                    dialogViewModel.Title = "Error";
+                    dialogViewModel.Message = "Item already added to selected store";
+
+                    IWindowManager manager = new WindowManager();
+                    manager.ShowDialog(dialogViewModel);
                 }
 
+            }
+
+        }
+
+        public void AddStore()
+        {
+            StoreProcessor.InsertStore(Name);
+
+            Stores = new BindableCollection<Store>(StoreProcessor.GetStores<Store>());
+            Reset();
+        }
+
+        public void UpdateItem()
+        {
+            if (SelectedStore != null)
+            {
+                StoreProcessor.UpdateStore(SelectedStore);
+                Stores.Refresh();
             }
             Reset();
         }
 
+        public void DeleteStore()
+        {
+            if (SelectedStore != null)
+            {
+                var confirmationDialogViewModel = IoC.Get<ConfirmationDialogViewModel>();
+                confirmationDialogViewModel.Title = "Confirmation";
+                confirmationDialogViewModel.Message = "Are you sure?";
+
+                IWindowManager manager = new WindowManager();
+                manager.ShowDialog(confirmationDialogViewModel);
+                if (confirmationDialogViewModel.MyDialogResult == DialogResult.Yes)
+                {
+                    StoreProcessor.DeleteStore(SelectedStore);
+                    Stores.Remove(SelectedStore);
+                }
+            }
+            Reset();
+        }
+
+        public void DeleteItem()
+        {
+            if (SelectedStoreItem == null || Name == null)
+            {
+                return;
+            }
+            Store item = Stores.Where(x => x.Name == Name).FirstOrDefault();
+            StoreProcessor.DeleteItemFromStore(item.StoreId, SelectedStoreItem.ItemId);
+
+            StoreItems = LoadStoreItems(item.StoreId);
+        }
+
         public void Reset()
         {
-            StoreItems = null;
+            Items = new BindableCollection<Item>(ItemsProcessor.GetItems<Item>());
+            StoreItems = new BindableCollection<Item>();
             SelectedStore = null;
             SelectedStoreItem = null;
             Name = null;
@@ -285,6 +333,76 @@ namespace ConsignmentShopUI.ViewModels
             PaymentDistributed = null;
             SelectedVendor = null;
             SelectedItem = null;
+        }
+
+        public BindableCollection<Item> LoadStoreItems(int storeId)
+        {
+            List<ItemsInStore> inStores = StoreProcessor.GetItemsInStores<ItemsInStore>(storeId).ToList();
+            return new BindableCollection<Item>(from x in inStores
+                                                join y in Items on x.ItemId equals y.ItemId
+                                                select new Item
+                                                {
+                                                    Title = y.Title,
+                                                    Description = y.Description,
+                                                    ItemId = y.ItemId,
+                                                    Owner = y.Owner,
+                                                    PaymentDistributed = y.PaymentDistributed,
+                                                    Sold = y.Sold,
+                                                    Price = y.Price
+                                                });
+        }
+
+        public void SearchStore()
+        {
+            Stores = new BindableCollection<Store>(StoreProcessor.GetStores<Store>(Name));
+            Reset();
+        }
+
+        public void SearchItem()
+        {
+            Items = new BindableCollection<Item>(ItemsProcessor.GetItems<Item>());
+            if(SelectedStore!=null)
+            {
+                StoreItems = LoadStoreItems(SelectedStore.StoreId);
+            }
+
+            bool titleValid = !string.IsNullOrWhiteSpace(Title);
+            bool descriptionValid = !string.IsNullOrWhiteSpace(Description);
+            bool priceValid = Price > 0;
+            bool soldValid = Sold != null;
+            bool paymentDistributedValid = PaymentDistributed != null;
+            bool selectedVendorValid = SelectedVendor?.VendorId != null;
+            if(titleValid)
+            {
+                Items =new BindableCollection<Item>( Items.Where(x => x.Title.ToLower().Contains(Title.ToLower())).ToList());
+                StoreItems = new BindableCollection<Item>(StoreItems.Where(x => x.Title.ToLower().Contains(Title.ToLower())).ToList());
+            }
+            if (descriptionValid)
+            {
+                Items = new BindableCollection<Item>(Items.Where(x => x.Description.ToLower().Contains(Description.ToLower())).ToList());
+                StoreItems = new BindableCollection<Item>(StoreItems.Where(x => x.Description.ToLower().Contains(Description.ToLower())).ToList());
+            }
+            if (priceValid)
+            {
+                Items = new BindableCollection<Item>(Items.Where(x => x.Price==Price).ToList());
+                StoreItems = new BindableCollection<Item>(StoreItems.Where(x => x.Price==Price).ToList());
+            }
+            if (soldValid)
+            {
+                Items = new BindableCollection<Item>(Items.Where(x => x.Sold==Sold).ToList());
+                StoreItems = new BindableCollection<Item>(StoreItems.Where(x => x.Sold==Sold).ToList());
+            }
+            if (paymentDistributedValid)
+            {
+                Items = new BindableCollection<Item>(Items.Where(x => x.PaymentDistributed==PaymentDistributed).ToList());
+                StoreItems = new BindableCollection<Item>(StoreItems.Where(x => x.PaymentDistributed==PaymentDistributed).ToList());
+            }
+            if (selectedVendorValid)
+            {
+                Items = new BindableCollection<Item>(Items.Where(x => x.Owner==SelectedVendor.VendorId).ToList());
+                StoreItems = new BindableCollection<Item>(StoreItems.Where(x => x.Owner == SelectedVendor.VendorId).ToList());
+            }
+
         }
 
         #region IDataErrorInfo interface implementations
