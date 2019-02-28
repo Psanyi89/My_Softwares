@@ -1,6 +1,7 @@
 ﻿using DataLayerLogic;
 using PersonEntities;
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 [assembly: log4net.Config.XmlConfigurator(ConfigFileExtension = ".config", ConfigFile = "App.config", Watch = true)]
@@ -17,7 +18,7 @@ namespace PersonManangerWPF
         public StartUp()
         {
             InitializeComponent();
-            pm = new DLLFacade().GetPersonManagerMemory();
+            pm =  DLLFacade.CreateManager(AccessType.Memory);
             try
             {
                 LstPerson.ItemsSource = pm.GetPersons();
@@ -28,7 +29,7 @@ namespace PersonManangerWPF
 
                 MessageBox.Show($"{ex.Message}\n{ex.StackTrace}", "Error!!!444", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
-            Options.ItemsSource = new DataAccess().AccesPoint;
+            Options.ItemsSource = Enum.GetValues(typeof(AccessType)).Cast<AccessType>();
 
         }
         private void LstPerson_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -128,43 +129,7 @@ namespace PersonManangerWPF
 
         private void Options_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Options.SelectedIndex == 0)
-            {
-                pm = new DLLFacade().GetPersonManagerMemory();
-
-            }
-            else if (Options.SelectedIndex == 1)
-            {
-                pm = new DLLFacade().GetPersonManagerTxt();
-            }
-            else if (Options.SelectedIndex == 2)
-            {
-                pm = new DLLFacade().GetPersonManagerCSV();
-            }
-            else if (Options.SelectedIndex == 3)
-            {
-                pm = new DLLFacade().GetPersonManagerXml();
-            }
-            else if (Options.SelectedIndex == 4)
-            {
-                pm = new DLLFacade().GetPersonManagerToml();
-            }
-            else if (Options.SelectedIndex == 5)
-            {
-                pm = new DLLFacade().GetPersonManagerJson();
-            }
-            else if (Options.SelectedIndex == 6)
-            {
-                pm = new DLLFacade().GetPersonManagerLocalDB();
-            }
-            else if (Options.SelectedIndex == 7)
-            {
-                pm = new DLLFacade().GetPersonManagerSqLiteFakeDB();
-            }
-            else if (Options.SelectedIndex == 8)
-            {
-                pm = new DLLFacade().GetPersonManagerBinary();
-            }
+            pm = DLLFacade.CreateManager((AccessType)Enum.Parse(typeof(AccessType), Options.SelectedItem.ToString()));
             LstPerson.ItemsSource = pm.GetPersons();
         }
         private void ClearPanel()

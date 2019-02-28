@@ -12,22 +12,25 @@ namespace PersonManagerWPF_MVVM.ViewModels
 {
     public class DataAccessViewModel : Conductor<object>
     {
+        private IPersonManager _personManager;
+        
 
         public BindableCollection<Person> People { get; set; }
-        private IPersonManager pm = new DLLFacade().GetPersonManagerMemory();
+     
 
         public DataAccessViewModel()
         {
-            People = new BindableCollection<Person>(pm.GetPersons());
+            _personManager =DLLFacade.CreateManager(AccessType.Memory);
+            People = new BindableCollection<Person>(_personManager.GetPersons());
         }
 
         public void AddPerson()
         {
             Random rnd = new Random();
-            var myList = pm.GetPersons();
+            var myList = _personManager.GetPersons();
             int index = rnd.Next(1,100);
             var person =myList.Where(x=>x.Id==index ).First();
-          var addedPerson=  pm.AddPerson(person);
+          var addedPerson=  _personManager.AddPerson(person);
             People.Add(addedPerson);
 
         }
@@ -38,7 +41,7 @@ namespace PersonManagerWPF_MVVM.ViewModels
             if (deletePerson!=null)
             {
 
-            var result=pm.DeletePerson(deletePerson);
+            var result=_personManager.DeletePerson(deletePerson);
             result=true ? People.Remove(deletePerson):throw new NullReferenceException("Person not exists");
         }
             else

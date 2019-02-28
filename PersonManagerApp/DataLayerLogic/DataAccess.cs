@@ -1,36 +1,21 @@
-﻿using System.Collections.Generic;
-
-namespace DataLayerLogic
+﻿namespace DataLayerLogic
 {
-    public class DataAccess
+    #region Access Type Enums
+    /// <summary>
+    /// Type of Access
+    /// </summary>
+    public enum AccessType
     {
-        #region DataAccess Options
-
-        /// <summary>
-        /// Options for DataAccess
-        /// </summary>
-        public List<string> AccesPoint = new List<string>
-        {
-
-            "Database in Memory",
-
-            "TXT Database",
-
-            "CSV Database",
-
-            "Xml Database",
-
-            "Toml Database",
-
-            "Json Database",
-
-            "LocalDB Database",
-
-            "SqLite Database",
-
-            "Binary Database"
-
-        };
-        #endregion
+        Memory,
+        TXT,
+        CSV,
+        XML,
+        TOML,
+        JSON,
+        LocalDB,
+        SQLite,
+        Binary
     }
+    #endregion
+
 }

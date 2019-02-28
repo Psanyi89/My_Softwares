@@ -21,7 +21,7 @@ namespace PersonManangerWPF
     /// </summary>
     public partial class AddPerson : Page
     {
-        IPersonManager pm = new DLLFacade().GetPersonManagerMemory();
+        IPersonManager pm =  DLLFacade.CreateManager(AccessType.Memory);
         public AddPerson()
         {
             InitializeComponent();
