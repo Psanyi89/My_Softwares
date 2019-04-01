@@ -4,10 +4,26 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:PersonManangerWPF"
+      xmlns:local1="clr-namespace:PersonManangerWPF.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="StartUp">
+    <Page.Resources>
 
+        <SolidColorBrush x:Key="brushWatermarkBackground" Color="White" />
+        <SolidColorBrush x:Key="brushWatermarkForeground" Color="LightSteelBlue" />
+        <SolidColorBrush x:Key="brushWatermarkBorder" Color="Indigo" />
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <local1:TextInputToVisibilityConverter x:Key="TextInputToVisibilityConverter" />
+
+        <Style x:Key="EntryFieldStyle" TargetType="Grid" >
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="20,0" />
+        </Style>
+
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -19,6 +35,26 @@
                 <Label Content="Choose Data Access: " FontWeight="Bold" FontSize="12"/>
                 <ComboBox VerticalAlignment="Center" x:Name="Options" HorizontalAlignment="Left" SelectionChanged="Options_SelectionChanged" SelectedIndex="0"  MinWidth="150"/>
             </WrapPanel>
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" >
+                <Grid  Background="{StaticResource brushWatermarkBackground}" Style="{StaticResource EntryFieldStyle}" >
+                    <TextBlock Margin="5,2" Text="Search...." Foreground="{StaticResource brushWatermarkForeground}"
+                       Visibility="{Binding ElementName=txtUserEntry, Path=Text.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <TextBox x:Name="txtUserEntry" Background="Transparent" BorderBrush="{StaticResource brushWatermarkBorder}" />
+                </Grid>
+            </WrapPanel>
+            <!--<WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                <Grid  Background="{StaticResource brushWatermarkBackground}" Style="{StaticResource EntryFieldStyle}" >
+                    <TextBlock Margin="5,2" Text="This dissappears as the control gets focus..." Foreground="{StaticResource brushWatermarkForeground}" >
+                        <TextBlock.Visibility>
+                            <MultiBinding Converter="{StaticResource TextInputToVisibilityConverter}">
+                                <Binding ElementName="txtUserEntry2" Path="Text.IsEmpty" />
+                                <Binding ElementName="txtUserEntry2" Path="IsFocused" />
+                            </MultiBinding>
+                        </TextBlock.Visibility>
+                    </TextBlock>
+                    <TextBox Name="txtUserEntry2" Background="Transparent" BorderBrush="{StaticResource brushWatermarkBorder}" />
+                </Grid>
+            </WrapPanel>-->
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>

@@ -1,9 +1,12 @@
-﻿using DataLayerLogic;
-using PersonEntities;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using DataLayerLogic;
+using PersonEntities;
+
 [assembly: log4net.Config.XmlConfigurator(ConfigFileExtension = ".config", ConfigFile = "App.config", Watch = true)]
 
 namespace PersonManangerWPF
@@ -13,15 +16,18 @@ namespace PersonManangerWPF
     /// </summary>
     public partial class StartUp : Page
     {
+ 
         private IPersonManager pm;
         private int SelectedPerson;
+        IEnumerable<Person> people;
         public StartUp()
         {
             InitializeComponent();
-            pm =  DLLFacade.CreateManager(AccessType.Memory);
+            pm = DLLFacade.CreateManager(AccessType.Memory);
             try
             {
-                LstPerson.ItemsSource = pm.GetPersons();
+               people= pm.GetPersons();
+                LstPerson.ItemsSource = people;
 
             }
             catch (Exception ex)
@@ -31,6 +37,32 @@ namespace PersonManangerWPF
             }
             Options.ItemsSource = Enum.GetValues(typeof(AccessType)).Cast<AccessType>();
 
+
+            var textchanges = Observable.FromEventPattern<TextChangedEventHandler, TextChangedEventArgs>(
+                h => txtUserEntry.TextChanged += h,
+                h => txtUserEntry.TextChanged -= h
+                ).Select(x => ((TextBox)x.Sender).Text);
+            
+            textchanges
+                .Throttle(TimeSpan.FromMilliseconds(300)) // result on threadpool
+                .Select(Lookfor)
+                .Switch()
+                .ObserveOnDispatcher() // send back to dispatcher
+                .Subscribe(OnSearchResult);
+
+            Lookfor("").Subscribe(OnSearchResult);
+        }
+
+        private void OnSearchResult(List<Person> list)
+        {
+            LstPerson.ItemsSource = list;
+
+        }
+        public IObservable<List<Person>> Lookfor(string filter)
+        {
+            var list = pm.GetPersons();
+            var filteredList = list.Where(x => x.Name.ToLower().Contains(filter.ToLower())).ToList();
+            return Observable.Return(filteredList);
         }
         private void LstPerson_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -95,7 +127,7 @@ namespace PersonManangerWPF
             //NavigationService.Navigate(new AddPerson());
             if (!string.IsNullOrWhiteSpace(TxtName.Text) && !string.IsNullOrWhiteSpace(TxtEmail.Text) && !string.IsNullOrWhiteSpace(TxtDateOfBirth.Text))
             {
-                Person Person = new Person
+                var Person = new Person
                 {
                     Name = TxtName.Text,
                     DateOfBirth = TxtDateOfBirth.SelectedDate ?? DateTime.MinValue,
@@ -134,11 +166,11 @@ namespace PersonManangerWPF
         }
         private void ClearPanel()
         {
-            foreach (object item in LogicalTreeHelper.GetChildren(Display))
+            foreach (var item in LogicalTreeHelper.GetChildren(Display))
             {
                 if (item is WrapPanel)
                 {
-                    foreach (object itemsitem in LogicalTreeHelper.GetChildren((WrapPanel)item))
+                    foreach (var itemsitem in LogicalTreeHelper.GetChildren((WrapPanel)item))
                     {
                         if (itemsitem is TextBox)
                         {

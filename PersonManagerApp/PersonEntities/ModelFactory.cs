@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+
 
 namespace PersonEntities
 {
-  public class ModelFactory
+    public class ModelFactory
     {
         public static IPerson CreatePerson()
         {
@@ -17,5 +14,6 @@ namespace PersonEntities
         {
             return new List<Person>();
         }
+
     }
 }

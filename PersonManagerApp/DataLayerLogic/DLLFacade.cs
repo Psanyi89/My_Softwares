@@ -1,5 +1,7 @@
 ﻿using System;
 using DataLayerLogic.Managers;
+
+
 namespace DataLayerLogic
 {
     public class DLLFacade
@@ -85,5 +87,9 @@ namespace DataLayerLogic
             }
         }
 
+        public static Enum CreateEnum()
+        {
+            return new AccessType();
+        }
     }
 }
