@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using TRMWPFDesktopUI.Helpers;
 using TRMWPFDesktopUI.ViewModels;
 
 namespace TRMWPFDesktopUI
 {
-   public class Bootstrapper: BootstrapperBase
+    public class Bootstrapper : BootstrapperBase
     {
 
         private SimpleContainer _container = new SimpleContainer();
@@ -17,6 +17,10 @@ namespace TRMWPFDesktopUI
         public Bootstrapper()
         {
             Initialize();
+            ConventionManager.AddElementConvention<PasswordBox>(
+          PasswordBoxHelper.BoundPasswordProperty,
+          "Password",
+          "PasswordChanged");
         }
         protected override void Configure()
         {
@@ -31,7 +35,7 @@ namespace TRMWPFDesktopUI
                 .Where(type => type.Name.EndsWith("ViewModel"))
                 .ToList()
                 .ForEach(viewModelType => _container.RegisterPerRequest(
-                    viewModelType,viewModelType.ToString(),viewModelType));
+                    viewModelType, viewModelType.ToString(), viewModelType));
         }
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
@@ -39,7 +43,7 @@ namespace TRMWPFDesktopUI
         }
         protected override object GetInstance(Type service, string key)
         {
-            return _container.GetInstance(service,key);
+            return _container.GetInstance(service, key);
         }
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
