@@ -38,6 +38,23 @@ namespace TRMWPFDesktopUI.ViewModels
             }
         }
 
+
+        public bool IsErrorVisible => !string.IsNullOrWhiteSpace(ErrorMessage);
+
+        private string _errorMessage;
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                NotifyOfPropertyChange(() => IsErrorVisible);
+                NotifyOfPropertyChange(() => ErrorMessage);
+            }
+        }
+
+
         public bool CanLogin => !string.IsNullOrWhiteSpace(Username)
                     && !string.IsNullOrWhiteSpace(Password);
 
@@ -45,12 +62,13 @@ namespace TRMWPFDesktopUI.ViewModels
         {
             try
             {
+                ErrorMessage = string.Empty;
                 Models.AuthenticatedUser result = await _apiHelper.Authenticate(Username, Password);
+
             }
             catch (Exception ex)
             {
-
-                Console.WriteLine(ex.Message);
+                ErrorMessage = ex.Message;
             }
 
         }
