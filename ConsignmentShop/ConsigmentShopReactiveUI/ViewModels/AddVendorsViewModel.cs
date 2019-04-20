@@ -1,11 +1,14 @@
 ﻿using ConsigmentShopReactiveUI.Models;
+using ConsignmentShopLogicLibrary.TaskProcessor;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI.Validation.Abstractions;
 using ReactiveUI.Validation.Contexts;
 using ReactiveUI.Validation.Helpers;
 using System;
+using System.Collections.ObjectModel;
 
 namespace ConsigmentShopReactiveUI
 {
@@ -27,15 +30,12 @@ namespace ConsigmentShopReactiveUI
         [Reactive] public string FirstName { get; set; }
         [Reactive] public string LastName { get; set; }
         [Reactive] public Vendor SelectedVendor { get; set; }
-        private readonly SourceList<Vendor> _vendors = new SourceList<Vendor>();
-        public IObservable<IChangeSet<Vendor>> Vendors()
-        {
-            return _vendors.Connect();
-        }
-
+        private readonly ReadOnlyObservableCollection<Vendor> _derived;
+        public ReadOnlyObservableCollection<Vendor> Derived => _derived;
+        public ObservableCollectionExtended<Vendor> Vendors { get; }
         public AddVendorsViewModel()
         {
-
+            Vendors =new ObservableCollectionExtended<Vendor>(VendorsProcessor.GetVendors<Vendor>());
         }
     }
 
