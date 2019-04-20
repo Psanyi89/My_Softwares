@@ -11,6 +11,10 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ConsignmentShop", "Consignm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsignmentShopLogicLibrary", "ConsignmentShopLogicLibrary\ConsignmentShopLogicLibrary.csproj", "{2B58BAF2-44B8-4259-A4B5-EB114875C7B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsigmentShopReactiveUI", "ConsigmentShopReactiveUI\ConsigmentShopReactiveUI.csproj", "{BBEC1284-6FE1-4562-B993-52D24A8028E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelperApp", "HelperApp\HelperApp.csproj", "{2D8BABC9-A636-4346-B63C-A93F186160FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +39,14 @@ Global
 		{2B58BAF2-44B8-4259-A4B5-EB114875C7B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B58BAF2-44B8-4259-A4B5-EB114875C7B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B58BAF2-44B8-4259-A4B5-EB114875C7B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBEC1284-6FE1-4562-B993-52D24A8028E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBEC1284-6FE1-4562-B993-52D24A8028E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBEC1284-6FE1-4562-B993-52D24A8028E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBEC1284-6FE1-4562-B993-52D24A8028E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D8BABC9-A636-4346-B63C-A93F186160FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D8BABC9-A636-4346-B63C-A93F186160FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D8BABC9-A636-4346-B63C-A93F186160FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D8BABC9-A636-4346-B63C-A93F186160FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

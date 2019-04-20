@@ -7,6 +7,7 @@ using System.Configuration;
 using Dapper;
 using System.Data;
 using System.Data.SqlClient;
+using ConsignmentShopLogicLibrary.Helpers;
 
 namespace ConsignmentShopLogicLibrary.DataAccess
 {
@@ -20,7 +21,7 @@ namespace ConsignmentShopLogicLibrary.DataAccess
         /// <returns>returns the chosen connectionstring</returns>
         public static string GetConnectionString(string ConnectionName)
         {
-            return ConfigurationManager.ConnectionStrings[ConnectionName].ConnectionString;
+            return Encrypt.DecryptString($"{ConfigurationManager.ConnectionStrings[ConnectionName].ConnectionString}", "Szeress amíg lehet");
         }
         #endregion
 

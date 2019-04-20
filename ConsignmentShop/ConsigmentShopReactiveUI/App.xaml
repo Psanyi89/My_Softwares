@@ -1,0 +1,45 @@
+﻿<Application x:Class="ConsigmentShopReactiveUI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ConsigmentShopReactiveUI"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                   <!--Begin TextBox Data Validation-->
+                    <Style x:Key="DataValidate" TargetType="Control">
+                        <Setter Property="Validation.ErrorTemplate">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <StackPanel>
+                                        <Border BorderThickness="2" BorderBrush="DarkRed">
+                                            <StackPanel>
+                                                <AdornedElementPlaceholder    
+                                x:Name="errorControl" />
+                                            </StackPanel>
+                                        </Border>
+                                        <TextBlock Text="{Binding AdornedElement.ToolTip    
+                        , ElementName=errorControl}" Foreground="Red" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Validation.HasError" Value="true">
+                                <Setter Property="BorderBrush" Value="Red" />
+                                <Setter Property="BorderThickness" Value="1" />
+                                <Setter Property="ToolTip"    
+                Value="{Binding RelativeSource={RelativeSource Self}    
+                    , Path=(Validation.Errors)[0].ErrorContent}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style BasedOn="{StaticResource DataValidate}" TargetType="ComboBox"/>
+                    <Style BasedOn="{StaticResource DataValidate}" TargetType="TextBox"/>
+                    <!--End of TextBox Data Validation-->
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

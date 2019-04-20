@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ConsigmentShopReactiveUI.Properties
+namespace ConsignmentShopReactiveUI.Properties
 {
 
 
