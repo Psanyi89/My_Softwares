@@ -12,7 +12,7 @@ namespace TRMWPFDesktopUI.ViewModels
     {
         private BindingList<string> _products;
         private BindingList<string> _cart;
-        private string itemQuantity;
+        private int itemQuantity;
 
         public BindingList<string> Products
         {
@@ -51,7 +51,7 @@ namespace TRMWPFDesktopUI.ViewModels
 
         }
 
-        public string ItemQuantity
+        public int ItemQuantity
         {
             get { return itemQuantity; }
             set { itemQuantity = value;

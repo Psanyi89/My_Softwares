@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using TRMDesktopUI.Library.API;
 using TRMDesktopUI.Library.Model;
+using TRMWPFDesktopUI.EventModels;
 using TRMWPFDesktopUI.Helpers;
 
 namespace TRMWPFDesktopUI.ViewModels
@@ -12,10 +13,11 @@ namespace TRMWPFDesktopUI.ViewModels
         private string _username;
         private string _password;
         private IAPIHelper _apiHelper;
-
-        public LoginViewModel(IAPIHelper apiHelper)
+        private IEventAggregator _events;
+        public LoginViewModel(IAPIHelper apiHelper, IEventAggregator events)
         {
             _apiHelper = apiHelper;
+            _events = events;
         }
 
         public string Username
@@ -68,6 +70,9 @@ namespace TRMWPFDesktopUI.ViewModels
                 AuthenticatedUser result = await _apiHelper.Authenticate(Username, Password);
                 // Capture more information about the user
                 await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
+
+                _events.PublishOnUIThread(new LogOnEvent());
+
             }
             catch (Exception ex)
             {
