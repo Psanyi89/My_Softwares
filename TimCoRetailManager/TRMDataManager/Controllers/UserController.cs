@@ -13,12 +13,12 @@ namespace TRMDataManager.Controllers
     [Authorize]
     public class UserController : ApiController
     {
-        public async Task<List<UserModel>> GetById()
+        public async Task<UserModel> GetById()
         {
             string id = RequestContext.Principal.Identity.GetUserId();
             UserData data = new UserData();
-          return await data.GetUserById(id);
-           
+          var result= await data.GetUserById(id).ConfigureAwait(false);
+            return result.FirstOrDefault();
         }
     }
 }

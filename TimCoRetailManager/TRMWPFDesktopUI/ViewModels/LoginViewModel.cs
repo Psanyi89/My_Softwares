@@ -1,6 +1,8 @@
 ﻿using Caliburn.Micro;
 using System;
 using System.Threading.Tasks;
+using TRMDesktopUI.Library.API;
+using TRMDesktopUI.Library.Model;
 using TRMWPFDesktopUI.Helpers;
 
 namespace TRMWPFDesktopUI.ViewModels
@@ -63,8 +65,9 @@ namespace TRMWPFDesktopUI.ViewModels
             try
             {
                 ErrorMessage = string.Empty;
-                Models.AuthenticatedUser result = await _apiHelper.Authenticate(Username, Password);
-
+                AuthenticatedUser result = await _apiHelper.Authenticate(Username, Password);
+                // Capture more information about the user
+                await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
             }
             catch (Exception ex)
             {
