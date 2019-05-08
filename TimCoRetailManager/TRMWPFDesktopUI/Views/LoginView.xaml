@@ -3,8 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"   
              xmlns:local="clr-namespace:TRMWPFDesktopUI.Views"
              mc:Ignorable="d"  Background="White" FontSize="24"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -35,17 +37,74 @@
                    MaxWidth="300" TextWrapping="Wrap"
                    Margin="176,0,2,46" Grid.RowSpan="2"/>
         <!--UserName Row-->
-        <TextBlock Grid.Column="1" Grid.Row="2" Text="Username: "
-                   Margin="0,0,5,10"/>
-        <TextBox x:Name="Username" Grid.Column="2" Grid.Row="2"
-                 MinWidth="350"  Margin="0,0,0,20"/>
+        <TextBlock />
+        <Viewbox Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center"
+    Margin="0,0,5,10" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Height="24" >
+            <Grid>
+                <Grid Name="backgroundGrid" Width="32" Height="32" Visibility="Collapsed" />
+                <Path Data="M27.844419,20.466302C28.100285,20.472555 28.35403,20.576558 28.545033,20.777056 28.926001,21.177046 28.910987,21.810035 28.509999,22.190035L22.938234,27.493994 19.45032,24.090039C19.054338,23.703996 19.046343,23.071007 19.432315,22.676022 19.819326,22.280031 20.452299,22.274049 20.846267,22.658048L22.95624,24.716985 27.131081,20.742053C27.330566,20.551549,27.588553,20.460051,27.844419,20.466302z M23.984986,18C20.668997,18 17.971006,20.691 17.971006,24 17.971006,27.309 20.668997,30 23.984986,30 27.300976,30 29.999967,27.309 29.999967,24 29.999967,20.691 27.300976,18 23.984986,18z M10.601984,15C5.8589907,15 1.9999962,18.829 1.9999962,23.535999 1.9999962,24.895 3.1159954,26 4.4889927,26L16.224632,26 16.223747,25.996895C16.058781,25.358369 15.971013,24.689219 15.971013,24 15.971013,20.829593 17.828189,18.083833 20.513653,16.790128L20.610052,16.746551 20.332828,16.543528C18.89453,15.541328,17.180412,15,15.396977,15L12.998987,15z M12.998987,2C9.9409952,2 7.453002,4.467 7.453002,7.5 7.453002,9.9469995 9.1079979,12.122999 11.477992,12.790999 12.460989,13.068 13.534986,13.069 14.520983,12.790999 16.890977,12.122 18.544972,9.9459991 18.544972,7.5 18.544972,4.467 16.056979,2 12.998987,2z M12.998987,0C17.159976,0 20.544967,3.3640003 20.544967,7.5 20.544967,9.6899061 19.574253,11.720467 17.994864,13.115179L17.807245,13.274327 17.878778,13.290484C19.649834,13.712343,21.289906,14.584437,22.644967,15.846L22.882442,16.07606 22.965696,16.064397C23.299549,16.021905 23.639753,16 23.984986,16 28.403972,16 31.99996,19.589 31.99996,24 31.99996,28.411 28.403972,32 23.984986,32 21.085027,32 18.539934,30.454347 17.132854,28.145059L17.049204,28 4.4889927,28C2.0129967,28 0,25.997 0,23.535999 0,18.633812 3.3851461,14.503339 7.9551601,13.332249L8.1908855,13.274955 8.0041208,13.116581C6.4241524,11.721779 5.4530077,9.6905622 5.4530077,7.5 5.4530077,3.3640003 8.8379984,0 12.998987,0z" Stretch="Uniform" Fill="#FF000000" Width="32" Height="32" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <TransformGroup.Children>
+                                <RotateTransform Angle="0" />
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </TransformGroup.Children>
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+            </Grid>
+        </Viewbox>
+        <TextBox Grid.Column="2" Grid.Row="2" VerticalAlignment="Center"
+                  HorizontalAlignment="Center" Height="auto"
+                         Controls:TextBoxHelper.Watermark="Username" 
+                         Controls:TextBoxHelper.WatermarkAlignment="Center"
+                         MinWidth="150"
+                 Text="{Binding Username,
+            ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, 
+            NotifyOnValidationError=True}"
+                 Controls:TextBoxHelper.ClearTextButton="{Binding RelativeSource={RelativeSource Self},
+                    Path=(Controls:TextBoxHelper.HasText),Mode=OneWay}"
+                          Controls:TextBoxHelper.IsWaitingForData="True"
+                             Controls:TextBoxHelper.SelectAllOnFocus="True"
+                          Controls:TextBoxHelper.UseFloatingWatermark="True" 
+                 Margin="20"/>
         <!--Password row-->
-        <TextBlock Grid.Column="1" Grid.Row="3" Text="Password: "
-                   Margin="0,0,5,10"/>
-        <PasswordBox x:Name="Password" Grid.Column="2" Grid.Row="3"
-                 MinWidth="100"  Margin="0,0,0,20"/>
+        
+        <Viewbox Grid.Column="1" Grid.Row="3"
+                 Margin="0,0,5,10"  
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" Height="24">
+            <Grid>
+                <Grid Name="backgroundGrid2" Width="24" Height="24" Visibility="Collapsed" />
+                <Path Data="M11.075022,18.608982L12.487025,20.024982 6.1170125,26.379984 4.7050099,24.963983z M11.620204,14.937551L2.0020046,24.460983 2.0000038,29.999985 5.9440122,29.999985 7.0150144,28.928985 9.6430199,28.928985 9.6430199,25.713983 12.857026,25.713983 12.857026,22.515983 16.072033,22.503982 16.072033,19.878326 16.063871,19.873758C14.132429,18.76178,12.58077,17.061134,11.655763,15.018692z M24.124451,6.1897272C23.730573,6.1896023 23.33657,6.339342 23.036068,6.6393207 22.746066,6.9293002 22.586064,7.3142732 22.586064,7.724244 22.586064,8.1342152 22.746066,8.5191878 23.036068,8.8091677 23.637072,9.4081258 24.612079,9.4081258 25.212083,8.8091677 25.502085,8.5191878 25.662086,8.1332158 25.661086,7.724244 25.661086,7.3132733 25.502085,6.9293002 25.212083,6.6393207 24.912081,6.3398417 24.518328,6.1898521 24.124451,6.1897272z M24.124076,4.1909932C25.029832,4.1909932 25.935588,4.5354689 26.625093,5.2244204 27.293097,5.8913735 27.6611,6.7793106 27.6611,7.7232441 27.6621,8.6681775 27.294098,9.556115 26.625093,10.224069 25.936088,10.913019 25.030082,11.256995 24.124075,11.256995 23.218069,11.256995 22.312063,10.913019 21.623058,10.224069L21.622058,10.224069C20.954054,9.556115 20.586051,8.6681775 20.586051,7.724244 20.586051,6.7793106 20.954054,5.8923734 21.623058,5.2244204 22.312563,4.5354689 23.218319,4.1909932 24.124076,4.1909932z M21.357102,1.9999994C16.591113,1.9999994 12.71404,5.8770117 12.71404,10.643 12.71404,15.40899 16.591113,19.286001 21.357102,19.286001 26.123091,19.286001 30.000042,15.40899 30.000042,10.643 30.000042,5.8770117 26.123091,1.9999994 21.357102,1.9999994z M21.357102,0C27.226118,3.575733E-07 32.000042,4.7739848 32.000042,10.643 32.000042,16.510979 27.226118,21.286001 21.357102,21.286001 20.256845,21.286001 19.195014,21.11813 18.19588,20.806658L18.177672,20.800733 18.072037,20.861982 18.072037,24.495983 14.85703,24.507984 14.85703,27.713985 11.643024,27.713985 11.643024,30.928985 7.8440158,30.928985 6.7720139,31.999987 0,31.999987 0.001999855,23.626984 10.934461,12.802395 10.930679,12.785068C10.788651,12.092917 10.714041,11.376498 10.714041,10.643 10.714041,4.7739848 15.489063,3.575733E-07 21.357102,0z" Stretch="Uniform" Fill="#FF0D0D0D" Width="24" Height="24" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                    <Path.RenderTransform>
+                        <TransformGroup>
+                            <TransformGroup.Children>
+                                <RotateTransform Angle="0" />
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </TransformGroup.Children>
+                        </TransformGroup>
+                    </Path.RenderTransform>
+                </Path>
+            </Grid>
+        </Viewbox>
+        <PasswordBox x:Name="Password" Grid.Column="2" Grid.Row="3" VerticalAlignment="Center"
+                     
+                     Controls:PasswordBoxHelper.CapsLockWarningToolTip="Warning CapsLock is on" 
+                         Controls:TextBoxHelper.Watermark="Password"  Height="auto" HorizontalAlignment="Center"
+                         Controls:PasswordBoxHelper.CapsLockIcon="{iconPacks:Octicons {x:Static iconPacks:PackIconOcticonsKind.Alert}, Width=14, Height=14}"
+                      Controls:TextBoxHelper.ClearTextButton="{Binding RelativeSource={RelativeSource Self},
+                    Path=(Controls:TextBoxHelper.HasText),Mode=OneWay}"
+                    Controls:TextBoxHelper.IsWaitingForData="True"
+                             Controls:TextBoxHelper.SelectAllOnFocus="True"
+                          Controls:TextBoxHelper.UseFloatingWatermark="True" 
+                             Style="{StaticResource Win8MetroPasswordBox}"
+                             ToolTip="Place of password" 
+                         Controls:PasswordBoxHelper.RevealButtonContent="{iconPacks:FontAwesome {x:Static iconPacks:PackIconFontAwesomeKind.EyeSlashSolid}}"
+                 MinWidth="150"  Margin="0,0,0,20"/>
         <!--Login row-->
         <Button Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
+                 Style="{StaticResource MaterialDesignRaisedDarkButton}"
                HorizontalAlignment="Center" x:Name="Login"
               Content="Login" Padding="20 5" />
     </Grid>

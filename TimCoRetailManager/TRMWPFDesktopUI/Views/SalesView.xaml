@@ -46,8 +46,10 @@
             <TextBox x:Name="ItemQuantity" MinWidth="100"
                      Margin="0 0 0 10"/>
             <Button x:Name="AddToCart" Content="Add To Cart" 
+                   Style="{StaticResource MaterialDesignRaisedDarkButton}"
                     Margin="0 0 0 30" Padding="5"/>
             <Button x:Name="RemoveFromCart" 
+                   Style="{StaticResource MaterialDesignRaisedDarkButton}"
                     Content="Remove from Cart" Padding="5"/>
         </StackPanel>
         <!--Column 2-->
@@ -73,6 +75,7 @@
                        TextAlignment="Right"/>
         </DockPanel>
         <Button x:Name="CheckOut" Grid.Row="6" 
+               Style="{StaticResource MaterialDesignRaisedDarkButton}"
                 Grid.Column="2" Content="Check Out"
                 Margin="0 20 0 0" Padding="5"/>
 

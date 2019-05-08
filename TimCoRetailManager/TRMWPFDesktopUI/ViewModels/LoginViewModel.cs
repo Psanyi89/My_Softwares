@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using TRMDesktopUI.Library.API;
 using TRMDesktopUI.Library.Model;
@@ -8,7 +9,7 @@ using TRMWPFDesktopUI.Helpers;
 
 namespace TRMWPFDesktopUI.ViewModels
 {
-    public class LoginViewModel : Screen
+    public class LoginViewModel : Screen, IDataErrorInfo
     {
         private string _username;
         private string _password;
@@ -61,6 +62,20 @@ namespace TRMWPFDesktopUI.ViewModels
 
         public bool CanLogin => !string.IsNullOrWhiteSpace(Username)
                     && !string.IsNullOrWhiteSpace(Password);
+
+        public string Error =>string.Empty;
+
+        public string this[string columnName]
+        {
+            get
+            {
+                if (columnName==nameof(Username) && string.IsNullOrWhiteSpace(Username))
+                {
+                    return "Please enter your username";
+                }
+                return null;
+            }
+        }
 
         public async Task Login()
         {

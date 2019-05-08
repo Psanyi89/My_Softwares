@@ -1,6 +1,8 @@
 ﻿<Application x:Class="TRMWPFDesktopUI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               xmlns:dragablz="clr-namespace:Dragablz;assembly=Dragablz"
+             xmlns:options="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
              xmlns:local="clr-namespace:TRMWPFDesktopUI">
     <Application.Resources>
         <ResourceDictionary>
@@ -8,8 +10,64 @@
                 <ResourceDictionary>
                     <local:Bootstrapper x:Key="Bootstrapper"/>
                 </ResourceDictionary>
+                <!-- MahApps -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.IconPacks;component/Themes/IconPacks.xaml" />
+                <!-- Material Design -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+
+                <!-- Material Design: MahApps Compatibility -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Defaults.xaml "/>
+
+                <!-- Dragablz Material Design -->
+                <ResourceDictionary Source="pack://application:,,,/Dragablz;component/Themes/materialdesign.xaml"/>
+
+                <!--MahApps.Metro.Controls-->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+         
+            <!--#region MahApps Brushes -->
+            <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource Primary700}"/>
+            <SolidColorBrush x:Key="AccentColorBrush" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="AccentColorBrush2" Color="{DynamicResource Primary400}"/>
+            <SolidColorBrush x:Key="AccentColorBrush3" Color="{DynamicResource Primary300}"/>
+            <SolidColorBrush x:Key="AccentColorBrush4" Color="{DynamicResource Primary200}"/>
+            <SolidColorBrush x:Key="WindowTitleColorBrush" Color="{DynamicResource Primary700}"/>
+            <SolidColorBrush x:Key="AccentSelectedColorBrush" Color="{DynamicResource Primary500Foreground}"/>
+            <LinearGradientBrush x:Key="ProgressBrush" EndPoint="0.001,0.5" StartPoint="1.002,0.5">
+                <GradientStop Color="{DynamicResource Primary700}" Offset="0"/>
+                <GradientStop Color="{DynamicResource Primary300}" Offset="1"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="CheckmarkFill" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="RightArrowFill" Color="{DynamicResource Primary500}"/>
+            <SolidColorBrush x:Key="IdealForegroundColorBrush" Color="{DynamicResource Primary500Foreground}"/>
+            <SolidColorBrush x:Key="IdealForegroundDisabledBrush" Color="{DynamicResource Primary500}" Opacity="0.4"/>
+            <Viewbox x:Key="UserIcon" x:Shared="false" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                <Grid>
+                    <Grid Name="backgroundGrid" Width="32" Height="32" Visibility="Visible" />
+                    <Path Data="M27.844419,20.466302C28.100285,20.472555 28.35403,20.576558 28.545033,20.777056 28.926001,21.177046 28.910987,21.810035 28.509999,22.190035L22.938234,27.493994 19.45032,24.090039C19.054338,23.703996 19.046343,23.071007 19.432315,22.676022 19.819326,22.280031 20.452299,22.274049 20.846267,22.658048L22.95624,24.716985 27.131081,20.742053C27.330566,20.551549,27.588553,20.460051,27.844419,20.466302z M23.984986,18C20.668997,18 17.971006,20.691 17.971006,24 17.971006,27.309 20.668997,30 23.984986,30 27.300976,30 29.999967,27.309 29.999967,24 29.999967,20.691 27.300976,18 23.984986,18z M10.601984,15C5.8589907,15 1.9999962,18.829 1.9999962,23.535999 1.9999962,24.895 3.1159954,26 4.4889927,26L16.224632,26 16.223747,25.996895C16.058781,25.358369 15.971013,24.689219 15.971013,24 15.971013,20.829593 17.828189,18.083833 20.513653,16.790128L20.610052,16.746551 20.332828,16.543528C18.89453,15.541328,17.180412,15,15.396977,15L12.998987,15z M12.998987,2C9.9409952,2 7.453002,4.467 7.453002,7.5 7.453002,9.9469995 9.1079979,12.122999 11.477992,12.790999 12.460989,13.068 13.534986,13.069 14.520983,12.790999 16.890977,12.122 18.544972,9.9459991 18.544972,7.5 18.544972,4.467 16.056979,2 12.998987,2z M12.998987,0C17.159976,0 20.544967,3.3640003 20.544967,7.5 20.544967,9.6899061 19.574253,11.720467 17.994864,13.115179L17.807245,13.274327 17.878778,13.290484C19.649834,13.712343,21.289906,14.584437,22.644967,15.846L22.882442,16.07606 22.965696,16.064397C23.299549,16.021905 23.639753,16 23.984986,16 28.403972,16 31.99996,19.589 31.99996,24 31.99996,28.411 28.403972,32 23.984986,32 21.085027,32 18.539934,30.454347 17.132854,28.145059L17.049204,28 4.4889927,28C2.0129967,28 0,25.997 0,23.535999 0,18.633812 3.3851461,14.503339 7.9551601,13.332249L8.1908855,13.274955 8.0041208,13.116581C6.4241524,11.721779 5.4530077,9.6905622 5.4530077,7.5 5.4530077,3.3640003 8.8379984,0 12.998987,0z" Stretch="Uniform" Fill="#FF000000" Width="32" Height="32" Margin="0,0,0,0" RenderTransformOrigin="0.5,0.5">
+                        <Path.RenderTransform>
+                            <TransformGroup>
+                                <TransformGroup.Children>
+                                    <RotateTransform Angle="0" />
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </TransformGroup.Children>
+                            </TransformGroup>
+                        </Path.RenderTransform>
+                    </Path>
+                </Grid>
+            </Viewbox>
+            <!--#endregion-->
+
+            <!-- Dragablz Material Design -->
+            <Style TargetType="{x:Type dragablz:TabablzControl}" BasedOn="{StaticResource MaterialDesignTabablzControlStyle}" />
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
