@@ -1,6 +1,10 @@
 ﻿using Caliburn.Micro;
+using Squirrel;
 using System;
 using System.ComponentModel;
+using System.Configuration;
+using System.Diagnostics;
+using System.Reflection;
 using System.Threading.Tasks;
 using TRMDesktopUI.Library.API;
 using TRMDesktopUI.Library.Model;
@@ -19,8 +23,10 @@ namespace TRMWPFDesktopUI.ViewModels
         {
             _apiHelper = apiHelper;
             _events = events;
+           
         }
-
+     
+     
         public string Username
         {
             get => _username;

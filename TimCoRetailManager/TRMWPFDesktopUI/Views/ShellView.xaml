@@ -8,7 +8,7 @@
    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"   
     xmlns:local="clr-namespace:TRMWPFDesktopUI.Views"
         mc:Ignorable="d"
-        Title="ShellView" Height="600" Width="1000"
+        Title="{Binding Title}" Height="600" Width="1000"
      ShowMinButton="True" ShowMaxRestoreButton="True"  ShowCloseButton="True"
     ShowIconOnTitleBar="True" ShowTitleBar="True" ResizeMode="CanResizeWithGrip"
       
