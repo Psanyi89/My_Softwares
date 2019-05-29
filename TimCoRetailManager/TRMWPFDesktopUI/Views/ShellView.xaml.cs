@@ -1,14 +1,18 @@
 ﻿using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using Octokit;
 using Squirrel;
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using TRMWPFDesktopUI.Models;
+using Application = System.Windows.Application;
 
 namespace TRMWPFDesktopUI.Views
 {
@@ -17,96 +21,86 @@ namespace TRMWPFDesktopUI.Views
     /// </summary>
     public partial class ShellView : MetroWindow
     {
+      
         public ShellView()
         {
             InitializeComponent();
-            CheckForUpdates();
+           
+            var updateTask = CheckForUpdates();
+            updateTask.Start();
         }
-        private async Task CheckForUpdates()
+        public static Task CheckForUpdates()
         {
-                    MetroDialogSettings metroDialogSettings = new MetroDialogSettings
-                    {
-                        AffirmativeButtonText = "Yes",
-                        NegativeButtonText = "No",
-                        DialogTitleFontSize=32,                         
-                          DefaultButtonFocus=MessageDialogResult.Affirmative,
-                           DialogMessageFontSize=18
-                    };
-          
-             UpdateInfo updateInfo;
-            MessageDialogResult firstMessageBox=MessageDialogResult.Negative;
-            using (WebClient client= new WebClient())
+           
+            bool cancel = false;
+            return new Task(() =>
             {
-                using (var manager = new UpdateManager("https://api.github.com/repos/Psanyi89/My_Softwares/releases/latest"))
+                while (!cancel)
                 {
-                    updateInfo = await manager.CheckForUpdate();
-                    if (updateInfo.ReleasesToApply.Any())
+                   CheckAndApplyUpdates(cancel);
+                    Thread.Sleep(3);
+                }
+            }, TaskCreationOptions.LongRunning);
+        }
+        private static string GetReleases(string username, string repoName)
+        {
+            const string GITHUB_API = "https://api.github.com/repos/{0}/{1}/releases";
+            WebClient webClient = new WebClient();
+            // Added user agent
+            webClient.Headers.Add("User-Agent", "TimCoRetailManager");
+            Uri uri = new Uri(string.Format(GITHUB_API, username, repoName));
+            string releases = webClient.DownloadString(uri);
+            return releases;
+        }
+        public static void CheckAndApplyUpdates(bool cancel)
+        {
+             
+            bool shouldRestart = false;
+
+            GitHubJson[] gitHubJson = GitHubJson.FromJson(GetReleases("Psanyi89", "My_Softwares"));
+            var downloadurl = gitHubJson.Select(x => x.Assets[0].BrowserDownloadUrl).FirstOrDefault().ToString().Replace("/RELEASES","");
+            using (UpdateManager manager = new UpdateManager(downloadurl))
+            {
+
+                var updateInfo = manager.CheckForUpdate().Result;
+
+                if (updateInfo.CurrentlyInstalledVersion==null || updateInfo.CurrentlyInstalledVersion.Version < updateInfo.FutureReleaseEntry.Version)
+                {
+
+                    var firstMessageBox = MessageBox.Show(
+                    $"New version available {updateInfo.FutureReleaseEntry.Version}!\n Would you like to download it?"
+                                       , "Update available", 
+                   MessageBoxButton.YesNo
+                                       );
+                    if (firstMessageBox == MessageBoxResult.Yes)
                     {
-                        var newversion = updateInfo.FutureReleaseEntry.Version;
-                        firstMessageBox = await this.ShowMessageAsync("Update available",
-                       $"New version available {newversion}!\n Would you like to download it?"
-                                          , MessageDialogStyle.AffirmativeAndNegative
-                                          , metroDialogSettings);
-                        if (firstMessageBox == MessageDialogResult.Affirmative)
-                        {
-                            var darkwindow = new Window()
-                            {
-                                Background = Brushes.Black,
-                                Opacity = 0.4,
-                                AllowsTransparency = true,
-                                WindowStyle = WindowStyle.None,
-                                WindowState = WindowState.Maximized,
-                                Topmost = true
-                            };
-                            darkwindow.Show();
-                            Popup popup = new Popup
-                            {
-                                Placement = PlacementMode.Center,
-                                PlacementTarget = this,
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                VerticalAlignment = VerticalAlignment.Center,
-                                AllowsTransparency = true,
-                                Opacity = 0.5
-                            };
-                            TextBlock textBlock = new TextBlock();
-                            textBlock.Text = "Downloading... ";
-                            textBlock.FontWeight = FontWeights.Bold;
-                            textBlock.FontSize = 24;
-                            textBlock.HorizontalAlignment = HorizontalAlignment.Center;
-                            StackPanel stackPanel = new StackPanel();
-                            stackPanel.Background = Brushes.Transparent;
-                            stackPanel.Opacity = 0.5;
-                            stackPanel.Orientation = Orientation.Vertical;
-                            popup.Child = stackPanel;
-                            stackPanel.Children.Add(textBlock);
-                            ProgressRing progressBar = new ProgressRing();
-                            progressBar.Height = 300;
-                            progressBar.Width = 300;
-                            progressBar.IsActive = true;
-                            stackPanel.Children.Add(progressBar);
-                            popup.IsOpen = true;
-                            await manager.DownloadReleases(updateInfo.ReleasesToApply);
-                            textBlock.Text = "Beginning to apply release..";
-                            await manager.ApplyReleases(updateInfo);
-                            textBlock.Text = "Creating uninstaller...";
-                            await manager.CreateUninstallerRegistryEntry();
-                            textBlock.Text = "All Done!";
-                            popup.IsOpen = false;
-                            darkwindow.Close();
-                        }
+                        shouldRestart = true;
+
+                        manager.DownloadReleases(updateInfo.ReleasesToApply).Wait();
+                        
+                        manager.ApplyReleases(updateInfo).Wait();
+                       
+                        manager.CreateUninstallerRegistryEntry().Wait();
+
+                    }
+                    else if (firstMessageBox ==MessageBoxResult.No)
+                    {
+                        cancel = true;
                     }
                 }
             }
-            if (updateInfo.ReleasesToApply.Any())
+
+            if (shouldRestart)
             {
 
-            if (firstMessageBox == MessageDialogResult.Affirmative && await this.ShowMessageAsync("Update Finished!"
-                                       , "Would you like to restart application to run the updated version?"
-                                       ,  MessageDialogStyle.AffirmativeAndNegative
-                                       , metroDialogSettings) == MessageDialogResult.Affirmative)
-            {
-                UpdateManager.RestartApp();
-            }
+                if (MessageBox.Show("Would you like to restart application to run the updated version?"
+                                           , "Update Finished!"
+                                           ,  MessageBoxButton.YesNo
+                                           ) == MessageBoxResult.Yes)
+                {
+                    UpdateManager.RestartApp();
+                }
+
             }
         }
     }

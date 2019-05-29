@@ -9,6 +9,7 @@ using ReactiveUI.Validation.Contexts;
 using ReactiveUI.Validation.Helpers;
 using System;
 using System.Collections.ObjectModel;
+using System.Reactive.Linq;
 
 namespace ConsigmentShopReactiveUI
 {
@@ -36,6 +37,7 @@ namespace ConsigmentShopReactiveUI
         public AddVendorsViewModel()
         {
             Vendors =new ObservableCollectionExtended<Vendor>(VendorsProcessor.GetVendors<Vendor>());
+           // this.WhenAnyValue(x => x.SelectedVendor).Where(x => x != null).Select(x => x.FirstName).ToProperty(this, x => x.FirstName, out FirstName);
         }
     }
 

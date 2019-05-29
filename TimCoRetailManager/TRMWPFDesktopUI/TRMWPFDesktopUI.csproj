@@ -62,6 +62,9 @@
     <Reference Include="Dragablz, Version=0.0.3.203, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dragablz.0.0.3.203\lib\net45\Dragablz.dll</HintPath>
     </Reference>
+    <Reference Include="GitHubUpdate, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GitHubUpdate.1.2.0.0\lib\net45\GitHubUpdate.dll</HintPath>
+    </Reference>
     <Reference Include="LoadingIndicators.WPF, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LoadingIndicators.WPF.0.0.1\lib\LoadingIndicators.WPF.dll</HintPath>
     </Reference>
@@ -103,6 +106,18 @@
     </Reference>
     <Reference Include="NuGet.Squirrel, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\squirrel.windows.1.9.1\lib\Net45\NuGet.Squirrel.dll</HintPath>
+    </Reference>
+    <Reference Include="Octokit, Version=0.32.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Octokit.0.32.0\lib\net45\Octokit.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenSSL.PrivateKeyDecoder, Version=1.2.0.0, Culture=neutral, PublicKeyToken=78f5ba1b024431f9, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenSSL.PrivateKeyDecoder.1.2.0\lib\net45\OpenSSL.PrivateKeyDecoder.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenSSL.X509Certificate2.Provider, Version=1.2.0.0, Culture=neutral, PublicKeyToken=78f5ba1b024431f9, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenSSL.X509Certificate2.Provider.1.2.0\lib\net45\OpenSSL.X509Certificate2.Provider.dll</HintPath>
+    </Reference>
+    <Reference Include="Semver, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\semver.1.1.2\lib\net451\Semver.dll</HintPath>
     </Reference>
     <Reference Include="SharpCompress, Version=0.17.1.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpCompress.0.17.1\lib\net45\SharpCompress.dll</HintPath>
@@ -147,6 +162,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="EventModels\LogOnEvent.cs" />
     <Compile Include="Helpers\PasswordBoxHelper.cs" />
+    <Compile Include="Models\GitHubJson.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\SalesViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
@@ -207,9 +223,7 @@
       <Name>TRMDesktopUI.Library</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -219,11 +233,11 @@
     <Error Condition="!Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets'))" />
   </Target>
   <Import Project="..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets" Condition="Exists('..\packages\squirrel.windows.1.9.1\build\squirrel.windows.targets')" />
-<Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
-  <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-    <Output TaskParameter="Assemblies" ItemName="myAssemblyInfo"/>
-  </GetAssemblyIdentity>
-  <Exec Command="D:\GitHub\My_Softwares\TimCoRetailManager\packages\NuGet.CommandLine.5.0.2\tools\NuGet.exe pack TRMWPFDesktopUI.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory D:\GitHub\My_Softwares\TimCoRetailManager\TRMWPFDesktopUI -BasePath $(OutDir)"/>
-  <Exec Command="D:\GitHub\My_Softwares\TimCoRetailManager\packages\squirrel.windows.1.9.1\tools\Squirrel.exe --releasify D:\GitHub\My_Softwares\TimCoRetailManager\TRMWPFDesktopUI\TimCoRetailManager.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg"/>
-</Target>
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="myAssemblyInfo" />
+    </GetAssemblyIdentity>
+    <Exec Command="D:\GitHub\My_Softwares\TimCoRetailManager\packages\NuGet.CommandLine.5.0.2\tools\NuGet.exe pack TRMWPFDesktopUI.nuspec -Version %(myAssemblyInfo.Version) -Properties Configuration=Release -OutputDirectory D:\GitHub\My_Softwares\TimCoRetailManager\TRMWPFDesktopUI -BasePath $(OutDir)" />
+    <Exec Command="D:\GitHub\My_Softwares\TimCoRetailManager\packages\squirrel.windows.1.9.1\tools\Squirrel.exe --releasify D:\GitHub\My_Softwares\TimCoRetailManager\TRMWPFDesktopUI\TimCoRetailManager.$([System.Version]::Parse(%(myAssemblyInfo.Version)).ToString(3)).nupkg" />
+  </Target>
 </Project>
