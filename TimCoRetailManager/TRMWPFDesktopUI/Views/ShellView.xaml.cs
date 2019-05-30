@@ -25,9 +25,11 @@ namespace TRMWPFDesktopUI.Views
         public ShellView()
         {
             InitializeComponent();
-           
+#if !DEBUG
+
             var updateTask = CheckForUpdates();
             updateTask.Start();
+#endif
         }
         public static Task CheckForUpdates()
         {
