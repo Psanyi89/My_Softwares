@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TRMDesktopUI.Library.API;
+using TRMDesktopUI.Library.Helpers;
 using TRMDesktopUI.Library.Model;
 
 namespace TRMWPFDesktopUI.ViewModels
@@ -13,9 +14,11 @@ namespace TRMWPFDesktopUI.ViewModels
     public class SalesViewModel : Screen
     {
         private IProductEndpoint _productEndpoint;
-        public SalesViewModel(IProductEndpoint productEndpoint)
+        private IConfigHelper _configHelper;
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
         {
-            _productEndpoint = productEndpoint; 
+            _productEndpoint = productEndpoint;
+            _configHelper = configHelper;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -63,29 +66,53 @@ namespace TRMWPFDesktopUI.ViewModels
 
         public string SubTotal
         {
-            get { 
-                        decimal subTotal = 0;
-                    foreach (var item in Cart)
-	                {
-                    subTotal += item.Product.RetailPrice * item.QuantityInCart;
-	                }
-
-                        return subTotal.ToString("C"); 
+            get
+            { 
+             return CalculateSubTotal().ToString("C"); 
             }               
           
         }
+        private decimal CalculateSubTotal()
+        {
+            decimal subTotal = 0;
+            foreach (var item in Cart)
+            {
+                subTotal += item.Product.RetailPrice * item.QuantityInCart;
+            }
+            return subTotal;
+        }
+        private decimal CalculateTax()
+        {
+            decimal taxAmount = 0;
+            decimal taxRate = _configHelper.GetTaxRate()/100;
+            foreach (var item in Cart)
+            {
+                if (item.Product.IsTaxable)
+                {
 
+                    taxAmount += (item.Product.RetailPrice * item.QuantityInCart * taxRate);
+                }
+
+            }
+            return taxAmount;
+        }
         public string Tax
         {
             // TODO - Replace with calculation
-            get { return "$0.00"; }
+            get {
+
+              return CalculateTax().ToString("C");
+            }
 
         }
 
         public string Total
         {
-            // TODO - Replace with calculation
-            get { return "$0.00"; }
+         
+            get
+            {
+                return CalculateTax() + CalculateSubTotal().ToString("C");
+            }
 
         }
 
@@ -110,9 +137,9 @@ namespace TRMWPFDesktopUI.ViewModels
             if (existingItem!=null)
             {
                 existingItem.QuantityInCart += ItemQuantity;
-               //// HACK - There should be a better way of refreshing the cart display
-                //Cart.Remove(existingItem);
-                //Cart.Add(existingItem);
+                // HACK - There should be a better way of refreshing the cart display
+                Cart.Remove(existingItem);
+                Cart.Add(existingItem);
 
             }
             else
@@ -128,6 +155,8 @@ namespace TRMWPFDesktopUI.ViewModels
             SelectedProduct.QuantityInStock -= ItemQuantity;
             ItemQuantity = 1;
             NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => Cart);
             NotifyOfPropertyChange(() => existingItem);
         }
@@ -142,6 +171,8 @@ namespace TRMWPFDesktopUI.ViewModels
         public void RemoveFromCart()
         {
             NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         public bool CanCheckOut

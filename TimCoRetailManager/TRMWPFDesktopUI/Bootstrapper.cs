@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using TRMDesktopUI.Library.API;
+using TRMDesktopUI.Library.Helpers;
 using TRMDesktopUI.Library.Model;
 using TRMWPFDesktopUI.Helpers;
 using TRMWPFDesktopUI.ViewModels;
@@ -33,7 +34,8 @@ namespace TRMWPFDesktopUI
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<IAPIHelper, APIHelper>()
-                .Singleton<ILoggedInUserModel, LoggedInUserModel>();
+                .Singleton<ILoggedInUserModel, LoggedInUserModel>()
+                .Singleton<IConfigHelper,ConfigHelper>();
             
             GetType().Assembly.GetTypes()
                 .Where(type => type.IsClass)
