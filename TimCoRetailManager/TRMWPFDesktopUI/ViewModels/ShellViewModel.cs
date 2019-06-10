@@ -25,16 +25,15 @@ namespace TRMWPFDesktopUI.ViewModels
 
         private IEventAggregator _events;
         private SalesViewModel _salesVM;
-        private SimpleContainer _container;
-        public ShellViewModel(LoginViewModel loginVM, IEventAggregator events
-            ,SalesViewModel salesVM, SimpleContainer container)
+        public ShellViewModel(IEventAggregator events
+            ,SalesViewModel salesVM)
         {
             _events = events;
             _events.Subscribe(this);
             _salesVM = salesVM;         
-            _container = container;
+        
             AddVersionNumber();
-            ActivateItem (_container.GetInstance<LoginViewModel>());
+            ActivateItem (IoC.Get<LoginViewModel>());
         }
         private void AddVersionNumber()
         {
