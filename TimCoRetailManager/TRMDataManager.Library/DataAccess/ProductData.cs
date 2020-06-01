@@ -19,5 +19,15 @@ namespace TRMDataManager.Library.DataAccess
                 .ConfigureAwait(false);
             return output;
         }
+
+        public async Task<ProductModel>  GetProductById(int productId)
+        {
+            SqlDataAccess sql = new SqlDataAccess();
+
+            var output = await sql.LoadData<ProductModel, dynamic>
+                ("dbo.spProduct_GetById", new { Id= productId }, "TRMData")
+                .ConfigureAwait(false);
+            return output.FirstOrDefault();
+        }
     }
 }

@@ -15,8 +15,8 @@ namespace TRMWPFDesktopUI.ViewModels
 {
     public class LoginViewModel : Screen, IDataErrorInfo
     {
-        private string _username;
-        private string _password;
+        private string _username="pleskosandor@gmail.com";
+        private string _password="Pwd12345.";
         private IAPIHelper _apiHelper;
         private IEventAggregator _events;
         public LoginViewModel(IAPIHelper apiHelper, IEventAggregator events)
@@ -92,7 +92,7 @@ namespace TRMWPFDesktopUI.ViewModels
                 // Capture more information about the user
                 await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
 
-                _events.PublishOnUIThread(new LogOnEvent());
+               _events.PublishOnUIThread(new LogOnEvent());
 
             }
             catch (Exception ex)

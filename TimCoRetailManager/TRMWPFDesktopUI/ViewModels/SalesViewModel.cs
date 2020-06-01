@@ -15,10 +15,14 @@ namespace TRMWPFDesktopUI.ViewModels
     {
         private IProductEndpoint _productEndpoint;
         private IConfigHelper _configHelper;
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
+        private readonly ISaleEndPoint _saleEndPoint;
+
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper,
+            ISaleEndPoint saleEndPoint)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
+            _saleEndPoint = saleEndPoint;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -115,7 +119,7 @@ namespace TRMWPFDesktopUI.ViewModels
          
             get
             {
-                return CalculateTax() + CalculateSubTotal().ToString("C");
+                return (CalculateTax() + CalculateSubTotal()).ToString("C");
             }
 
         }
@@ -163,6 +167,7 @@ namespace TRMWPFDesktopUI.ViewModels
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => Cart);
             NotifyOfPropertyChange(() => existingItem);
+            NotifyOfPropertyChange(() => CanCheckOut);
         }
 
         public bool CanRemoveFromCart
@@ -177,18 +182,37 @@ namespace TRMWPFDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
         }
 
         public bool CanCheckOut
         {
             // Make sure something is in the cart
         
-            get { return false; }
+            get 
+            {
+                bool output = false;
+                if (Cart.Count>0)
+                {
+                    output = true;
+                }
+                return output;
+            }
         }
 
-        public void CheckOut()
+        public async Task CheckOut()
         {
-
+            // create salemodel and post to the API
+            SaleModel sale = new SaleModel();
+            foreach (var item in Cart)
+            {
+                sale.SaleDetails.Add(new SaleDetailModel
+                    {
+                        ProductId = item.Product.Id,
+                        Quantity = item.QuantityInCart
+                    });
+            }
+           await _saleEndPoint.PostSaleAsync(sale).ConfigureAwait(false);
         }
 
     }
