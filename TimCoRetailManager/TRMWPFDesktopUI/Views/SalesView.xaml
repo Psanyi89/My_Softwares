@@ -90,8 +90,9 @@
         <DockPanel  Grid.Row="5"
                     Grid.Column="2">
             <TextBlock Text="Total: "/>
-            <TextBlock x:Name="Total" Text="$0.00" 
-                       TextAlignment="Right"/>
+            <TextBlock x:Name="Total" 
+                       TextAlignment="Right" Text="{Binding Total,
+                StringFormat='{}{0:C}', FallbackValue=$0.00}"/>
         </DockPanel>
         <Button x:Name="CheckOut" Grid.Row="6" 
                Style="{StaticResource MaterialDesignRaisedDarkButton}"

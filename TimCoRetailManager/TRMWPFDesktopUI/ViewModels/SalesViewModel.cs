@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using TRMDesktopUI.Library.API;
 using TRMDesktopUI.Library.Helpers;
 using TRMDesktopUI.Library.Model;
+using TRMWPFDesktopUI.Models;
 
 namespace TRMWPFDesktopUI.ViewModels
 {
@@ -16,13 +18,15 @@ namespace TRMWPFDesktopUI.ViewModels
         private IProductEndpoint _productEndpoint;
         private IConfigHelper _configHelper;
         private readonly ISaleEndPoint _saleEndPoint;
+        private readonly IMapper _mapper;
 
         public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper,
-            ISaleEndPoint saleEndPoint)
+            ISaleEndPoint saleEndPoint,IMapper mapper)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndPoint = saleEndPoint;
+            _mapper = mapper;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -34,14 +38,15 @@ namespace TRMWPFDesktopUI.ViewModels
         private async Task LoadProducts()
         {
             var producList = await _productEndpoint.GetAll();
-            Products = new BindingList<ProductModel>(producList);
+            var products = _mapper.Map<List<ProductDisplayModel>>(producList);
+            Products = new BindingList<ProductDisplayModel>(products);
         }
 
-        private BindingList<ProductModel> _products;
-        private BindingList<CartItemModel> _cart=new BindingList<CartItemModel>();
+        private BindingList<ProductDisplayModel> _products;
+        private BindingList<CartItemDisplayModel> _cart=new BindingList<CartItemDisplayModel>();
         private int itemQuantity=1;
 
-        public BindingList<ProductModel> Products
+        public BindingList<ProductDisplayModel> Products
         {
             get { return _products; }
             set { _products = value;
@@ -49,9 +54,9 @@ namespace TRMWPFDesktopUI.ViewModels
             }
         }
 
-        private ProductModel _selectedProduct;
+        private ProductDisplayModel _selectedProduct;
 
-        public ProductModel SelectedProduct
+        public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
             set { _selectedProduct = value;
@@ -60,7 +65,7 @@ namespace TRMWPFDesktopUI.ViewModels
             }
         }
 
-        public BindingList<CartItemModel> Cart
+        public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
             set { _cart = value;
@@ -119,7 +124,7 @@ namespace TRMWPFDesktopUI.ViewModels
          
             get
             {
-                return (CalculateTax() + CalculateSubTotal()).ToString("C");
+                return (CalculateTax() + CalculateSubTotal()).ToString();
             }
 
         }
@@ -141,19 +146,19 @@ namespace TRMWPFDesktopUI.ViewModels
         }
         public void AddToCart()
         {
-            CartItemModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
+            CartItemDisplayModel existingItem = Cart.FirstOrDefault(x => x.Product == SelectedProduct);
             if (existingItem!=null)
             {
                 existingItem.QuantityInCart += ItemQuantity;
                 // HACK - There should be a better way of refreshing the cart display
-                Cart.Remove(existingItem);
-                Cart.Add(existingItem);
+                //Cart.Remove(existingItem);
+                //Cart.Add(existingItem);
 
             }
             else
             {
 
-            CartItemModel cartItem = new CartItemModel
+            CartItemDisplayModel cartItem = new CartItemDisplayModel
             {
                 Product=SelectedProduct,
                 QuantityInCart=ItemQuantity

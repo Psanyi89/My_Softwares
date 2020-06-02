@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using TRMDesktopUI.Library.API;
 using TRMDesktopUI.Library.Helpers;
 using TRMDesktopUI.Library.Model;
 using TRMWPFDesktopUI.Helpers;
+using TRMWPFDesktopUI.Models;
 using TRMWPFDesktopUI.ViewModels;
 
 namespace TRMWPFDesktopUI
@@ -25,8 +27,25 @@ namespace TRMWPFDesktopUI
           "Password",
           "PasswordChanged");
         }
+
+        private IMapper ConfigureAutomapper()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProductModel, ProductDisplayModel>();
+                cfg.CreateMap<CartItemModel, CartItemDisplayModel>();
+            });
+
+            var mapper = config.CreateMapper();
+
+            return mapper;
+        }
+
         protected override void Configure()
         {
+
+            _container.Instance(ConfigureAutomapper());
+
             _container.Instance(_container)
                 .PerRequest<IProductEndpoint,ProductEndpoint>()
                 .PerRequest<ISaleEndPoint,SaleEndPoint>();
