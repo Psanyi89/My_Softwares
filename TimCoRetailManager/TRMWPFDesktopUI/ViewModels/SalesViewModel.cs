@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using TRMDesktopUI.Library.API;
@@ -64,6 +65,31 @@ namespace TRMWPFDesktopUI.ViewModels
                 NotifyOfPropertyChange(() => CanAddToCart);
             }
         }
+
+        private async Task ResetSalesViewModel()
+        {
+            Cart = new BindingList<CartItemDisplayModel>();
+            // TODO Add clearing the selectedCareItem if it does not do it itself
+            await LoadProducts();
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
+        }
+
+        private CartItemDisplayModel _selectedCartItem;
+
+        public CartItemDisplayModel SelectedCartItem
+        {
+            get { return _selectedCartItem; }
+            set 
+            { 
+                _selectedCartItem = value;
+                NotifyOfPropertyChange(() => SelectedCartItem);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
+            }
+        }
+
 
         public BindingList<CartItemDisplayModel> Cart
         {
@@ -150,10 +176,6 @@ namespace TRMWPFDesktopUI.ViewModels
             if (existingItem!=null)
             {
                 existingItem.QuantityInCart += ItemQuantity;
-                // HACK - There should be a better way of refreshing the cart display
-                //Cart.Remove(existingItem);
-                //Cart.Add(existingItem);
-
             }
             else
             {
@@ -179,15 +201,34 @@ namespace TRMWPFDesktopUI.ViewModels
         {
             // Make sure something is selected
             // Make sure there is an item quantity
-            get { return false; }
+            get
+            {
+                bool output = false;
+                if (SelectedCartItem!=null && SelectedCartItem?.QuantityInCart > 0)
+                {
+                    output = true;
+                }
+                return output;
+            }
         }
 
         public void RemoveFromCart()
         {
+            int amountToRemove = ItemQuantity <= SelectedCartItem.QuantityInCart ? ItemQuantity : SelectedCartItem.QuantityInCart;
+            SelectedCartItem.Product.QuantityInStock += amountToRemove;
+            if (SelectedCartItem.QuantityInCart> amountToRemove)
+            {
+                SelectedCartItem.QuantityInCart-=amountToRemove;
+            }
+            else
+            {
+                Cart.Remove(SelectedCartItem);
+            }
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => CanCheckOut);
+            NotifyOfPropertyChange(() => CanAddToCart);
         }
 
         public bool CanCheckOut
@@ -218,6 +259,8 @@ namespace TRMWPFDesktopUI.ViewModels
                     });
             }
            await _saleEndPoint.PostSaleAsync(sale).ConfigureAwait(false);
+
+           await ResetSalesViewModel();
         }
 
     }

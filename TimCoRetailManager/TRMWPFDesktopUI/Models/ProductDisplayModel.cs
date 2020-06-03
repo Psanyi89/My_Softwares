@@ -17,11 +17,10 @@ namespace TRMWPFDesktopUI.Models
 
             set
             {
-                if (value !=_quantityInStock)
-                {
+
                     _quantityInStock = value;
                     NotifyOfPropertyChange(() => QuantityInStock);
-                }
+
             }
         }
         public bool IsTaxable { get; set; }

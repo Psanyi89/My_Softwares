@@ -68,7 +68,7 @@
         <!--Column 2-->
         <TextBlock Text="Cart" Grid.Row="1" Grid.Column="2"/>
         <ListBox x:Name="Cart" Grid.Row="2" Grid.Column="2"
-                  MinHeight="200" MinWidth="150">
+                  MinHeight="200" MinWidth="150" SelectedItem="{Binding SelectedCartItem}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding DisplayText}"/>
@@ -92,7 +92,7 @@
             <TextBlock Text="Total: "/>
             <TextBlock x:Name="Total" 
                        TextAlignment="Right" Text="{Binding Total,
-                StringFormat='{}{0:C}', FallbackValue=$0.00}"/>
+                 FallbackValue=$0.00}"/>
         </DockPanel>
         <Button x:Name="CheckOut" Grid.Row="6" 
                Style="{StaticResource MaterialDesignRaisedDarkButton}"
