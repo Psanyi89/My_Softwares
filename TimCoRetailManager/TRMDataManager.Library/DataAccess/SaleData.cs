@@ -52,24 +52,37 @@ namespace TRMDataManager.Library.DataAccess
             };
             sale.Total = sale.SubTotal + sale.Tax;
 
-            // Save the sale model
-            SqlDataAccess sql = new SqlDataAccess();
-
-           await sql.SaveData("dbo.spSale_Insert", sale, "TRMData").ConfigureAwait(false);
-
-            // Get the ID from the sale model
-          sale.Id=  (await sql.LoadData<int,dynamic>("dbo.spSale_Lookup",
-                new {CashierId=sale.CashierId, SaleDate=sale.SaleDate },
-                "TRMData").ConfigureAwait(false)).FirstOrDefault();
-            // Finish filling in the sale detail models
-
-            foreach (var item in saleDetails)
+            using (SqlDataAccess sql = new SqlDataAccess())
             {
-                item.SaleId =sale.Id;
-                // Save the sale detail models
-                await sql.SaveData("dbo.spSaleDetail_Insert",item,"TRMData");
-            }
+                try
+                {
+                    sql.StartTransaction("TRMData");
 
+                    // Save the sale model
+                     sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
+
+                    // Get the ID from the sale model
+                    sale.Id =  sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup",
+                    new { CashierId = sale.CashierId, SaleDate = sale.SaleDate })
+                        .FirstOrDefault();
+
+                    // Finish filling in the sale detail models
+                    foreach (var item in saleDetails)
+                    {
+                        item.SaleId = sale.Id;
+                        // Save the sale detail models
+                         sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
+                    }
+                    sql.CommitTransaction();
+                }
+                catch
+                {
+
+                    sql.RollBackTransaction();
+                    throw;
+                }
+
+            } 
         }
         //public async Task<List<ProductModel>> GetProducts()
         //{
