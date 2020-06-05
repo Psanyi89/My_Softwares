@@ -29,7 +29,7 @@ namespace TRMDataManager.Library.DataAccess
                 };
 
                 // Get the information about this product
-                var productInfo = await products.GetProductById(detail.ProductId);
+                var productInfo = await products.GetProductById(detail.ProductId).ConfigureAwait(false);
                 if (productInfo==null)
                 {
                     throw new Exception($"the product id of {detail.ProductId} couldn't found in the database.");
@@ -59,11 +59,11 @@ namespace TRMDataManager.Library.DataAccess
                     sql.StartTransaction("TRMData");
 
                     // Save the sale model
-                     sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
+                    await sql.SaveDataInTransaction("dbo.spSale_Insert", sale).ConfigureAwait(false);
 
                     // Get the ID from the sale model
-                    sale.Id =  sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup",
-                    new { CashierId = sale.CashierId, SaleDate = sale.SaleDate })
+                    sale.Id =  ( await sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup",
+                    new { CashierId = sale.CashierId, SaleDate = sale.SaleDate }).ConfigureAwait(false))
                         .FirstOrDefault();
 
                     // Finish filling in the sale detail models
@@ -71,7 +71,7 @@ namespace TRMDataManager.Library.DataAccess
                     {
                         item.SaleId = sale.Id;
                         // Save the sale detail models
-                         sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
+                        await sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item).ConfigureAwait(false);
                     }
                     sql.CommitTransaction();
                 }
