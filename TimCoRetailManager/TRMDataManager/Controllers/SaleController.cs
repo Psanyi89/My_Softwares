@@ -20,7 +20,13 @@ namespace TRMDataManager.Controllers
             string userId = RequestContext.Principal.Identity.GetUserId();
             await data.SaveSale(sale, userId);
         }
-
+       
+        [Route("GetSalesReport")]
+        public async Task<List<SaleReportModel>> GetSalesReport()
+        {
+            SaleData data = new SaleData();
+            return await data.GetSaleReport().ConfigureAwait(false);
+        }
      
     }
 }
