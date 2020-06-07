@@ -1,6 +1,4 @@
 ﻿using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
-using Octokit;
 using Squirrel;
 using System;
 using System.Linq;
@@ -8,11 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
 using TRMWPFDesktopUI.Models;
-using Application = System.Windows.Application;
 
 namespace TRMWPFDesktopUI.Views
 {

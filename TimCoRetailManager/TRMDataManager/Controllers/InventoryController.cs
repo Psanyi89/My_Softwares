@@ -13,12 +13,14 @@ namespace TRMDataManager.Controllers
     [Authorize]
     public class InventoryController : ApiController
     {
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<List<InventoryModel>> Get()
         {
             InventoryData data = new InventoryData();
             return await data.GetInventory().ConfigureAwait(false);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task Post(InventoryModel item)
         {
             InventoryData data = new InventoryData();
