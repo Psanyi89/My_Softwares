@@ -3,10 +3,12 @@ using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using TRMDesktopUI.Library.API;
 using TRMDesktopUI.Library.Helpers;
 using TRMDesktopUI.Library.Model;
@@ -20,20 +22,46 @@ namespace TRMWPFDesktopUI.ViewModels
         private IConfigHelper _configHelper;
         private readonly ISaleEndPoint _saleEndPoint;
         private readonly IMapper _mapper;
+        private readonly StatusInfoViewModel _statusInfo;
+        private readonly IWindowManager _window;
 
         public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper,
-            ISaleEndPoint saleEndPoint,IMapper mapper)
+            ISaleEndPoint saleEndPoint,IMapper mapper, StatusInfoViewModel statusInfo,
+            IWindowManager window)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndPoint = saleEndPoint;
             _mapper = mapper;
+            _statusInfo = statusInfo;
+            _window = window;
         }
 
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            await LoadProducts();
+            try
+            {
+                await LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                dynamic settings = new ExpandoObject();
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                settings.ResizeMode = ResizeMode.NoResize;
+                settings.Title = "System Error";
+
+                if (ex.Message== "Unauthorized")
+                {
+                    _statusInfo.UpdateMessage("Unauthorized access", $"{ex.Message}\n you dont have permission to interact with the sales form "); 
+                }
+                else
+                {
+                    _statusInfo.UpdateMessage("Fatal Exception", ex.Message);
+                }
+                _window.ShowDialog(_statusInfo,null,settings);
+                TryClose();
+            }
         }
 
         private async Task LoadProducts()
@@ -258,7 +286,15 @@ namespace TRMWPFDesktopUI.ViewModels
                         Quantity = item.QuantityInCart
                     });
             }
-           await _saleEndPoint.PostSaleAsync(sale).ConfigureAwait(false);
+            try
+            {
+                await _saleEndPoint.PostSaleAsync(sale).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
 
            await ResetSalesViewModel();
         }
