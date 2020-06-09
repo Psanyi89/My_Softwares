@@ -74,5 +74,10 @@ namespace TRMWPFDesktopUI.ViewModels
                 return !string.IsNullOrWhiteSpace(_user.Token);
             }
         }
+
+        public void UserManagement()
+        {
+            ActivateItem(IoC.Get<UserDisplayViewModel>());
+        }
     }
 }
